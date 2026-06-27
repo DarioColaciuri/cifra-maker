@@ -17,7 +17,7 @@ interface Props {
 
 export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
   const { removeMeasure, addChord, updateMeasure } = useDocumentStore()
-  const { symbolToPlace, setSymbolToPlace, setToolMode, dragOverMeasureId } = useUIStore()
+  const { symbolToPlace, setSymbolToPlace, setToolMode, dragOverMeasureId, activeDragType, activeDragSymbolId } = useUIStore()
 
   const droppableId = `${sectionId}--${systemId}--${measure.id}`
 
@@ -82,11 +82,11 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
   return (
     <div
       ref={setNodeRef}
-      className="relative flex-1 cursor-pointer group transition-colors rounded-sm"
+      className="relative flex-1 cursor-pointer group transition-all duration-150 rounded-sm"
       style={(isOver || dragOverMeasureId === measure.id) ? {
-        background: 'rgba(226, 168, 62, 0.12)',
-        boxShadow: 'inset 0 0 0 2px var(--accent), 0 0 12px var(--accent-glow)',
-        transition: 'all 0.15s ease',
+        background: 'rgba(226, 168, 62, 0.15)',
+        boxShadow: 'inset 0 0 0 3px var(--accent), 0 0 16px var(--accent-glow)',
+        zIndex: 5,
       } : undefined}
       onClick={handleClick}
     >
@@ -209,6 +209,30 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
               <div className="w-[2px] h-12 bg-gray-700" /><div className="w-[2px] h-12 bg-gray-700" />
             </div>
           </PlacedSymbol>
+        </div>
+      )}
+
+      {/* Ghost preview for symbol/chord drags */}
+      {dragOverMeasureId === measure.id && activeDragType && (activeDragType === 'symbol' || activeDragType === 'placed-symbol') && (
+        <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+          <span style={{
+            fontSize: 28,
+            opacity: 0.3,
+            color: 'var(--accent)',
+            filter: 'blur(0.5px)',
+          }}>
+            {activeDragSymbolId === 'repeatStart' ? '𝄆' :
+             activeDragSymbolId === 'repeatEnd' ? '𝄇' :
+             activeDragSymbolId === 'doubleBarline' ? '𝄁' :
+             activeDragSymbolId === 'fermata' ? '𝄐' :
+             activeDragSymbolId === 'fine' ? '𝄂' :
+             activeDragSymbolId === 'dcAlFine' ? 'D.C. al Fine' :
+             activeDragSymbolId === 'dsAlCoda' ? 'D.S. al Coda' :
+             activeDragSymbolId === 'coda' ? '𝄌' :
+             activeDragSymbolId === 'segno' ? '𝄉' :
+             activeDragSymbolId === 'firstEnding' ? '1.' :
+             activeDragSymbolId === 'secondEnding' ? '2.' : '?'}
+          </span>
         </div>
       )}
 

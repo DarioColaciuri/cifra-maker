@@ -58,18 +58,29 @@ export default function App() {
   const handleDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current as DragData | undefined
     if (data?.chord) setActiveChord(data.chord)
-    else if (data?.type === 'symbol' && data?.symbolId) setActiveSymbol(data.symbolId)
+    else if (data?.type === 'symbol' && data?.symbolId) {
+      setActiveSymbol(data.symbolId)
+      useUIStore.getState().setActiveDragInfo('symbol', data.symbolId)
+    }
+    else if (data?.type === 'placed-symbol' && data?.symbolId) {
+      useUIStore.getState().setActiveDragInfo('placed-symbol', data.symbolId)
+    }
+    else if (data?.type === 'new-chord') {
+      useUIStore.getState().setActiveDragInfo('new-chord', null)
+    }
+    else if (data?.type === 'chord') {
+      useUIStore.getState().setActiveDragInfo('chord', null)
+    }
   }
 
   const handleDragOver = (event: DragOverEvent) => {
     const overData = event.over?.data.current as DragData | undefined
-    if (overData?.measureId) {
-      useUIStore.getState().setDragOverMeasure(overData.measureId)
-    }
+    useUIStore.getState().setDragOverMeasure(overData?.measureId || null)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     useUIStore.getState().setDragOverMeasure(null)
+    useUIStore.getState().setActiveDragInfo(null, null)
     setActiveChord(null)
     setActiveSymbol(null)
     const { active, over } = event

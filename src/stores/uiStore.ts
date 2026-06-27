@@ -21,6 +21,8 @@ interface UIState {
 
   // Drag-over tracking for visual highlighting
   dragOverMeasureId: string | null
+  activeDragType: string | null
+  activeDragSymbolId: string | null
 
   // Chord placement mode (from sidebar)
   currentChord: Chord | null
@@ -37,6 +39,7 @@ interface UIState {
   clearSelection: () => void
   setSymbolToPlace: (symbol: string | null) => void
   setDragOverMeasure: (id: string | null) => void
+  setActiveDragInfo: (type: string | null, symbolId: string | null) => void
 
   // Chord placement
   setCurrentChord: (chord: Chord | null) => void
@@ -56,6 +59,8 @@ export const useUIStore = create<UIState>((set) => ({
   selectedChordContext: null,
   symbolToPlace: null,
   dragOverMeasureId: null,
+  activeDragType: null,
+  activeDragSymbolId: null,
   currentChord: null,
   addChordToMeasure: false,
 
@@ -80,6 +85,7 @@ export const useUIStore = create<UIState>((set) => ({
   }),
   setSymbolToPlace: (symbol) => set({ symbolToPlace: symbol }),
   setDragOverMeasure: (id) => set({ dragOverMeasureId: id }),
+  setActiveDragInfo: (type, symbolId) => set({ activeDragType: type, activeDragSymbolId: symbolId }),
   setCurrentChord: (chord) => set({ currentChord: chord }),
   setAddChordToMeasure: (active) => set({ addChordToMeasure: active }),
 }))
