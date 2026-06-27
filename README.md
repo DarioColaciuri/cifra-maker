@@ -1,32 +1,50 @@
-# React + TypeScript + Vite
+# Cifra Maker
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Professional chord chart editor built with React + TypeScript. Create beautiful, printable lead sheets for musicians.
 
-Currently, two official plugins are available:
+![Cifra Maker](public/icons.svg)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Drag & Drop** — Build chords in the sidebar and drag them onto measures. Reorder chords and sections by dragging.
+- **Visual Chord Builder** — Piano keyboard, quality selector, and extensions. No need to memorize chord notation.
+- **Professional Notation** — Jazz symbols (Δ, ♭, ♯, ø) or standard text (maj7, b5, m7b5). Toggle anytime.
+- **Sheet Music Layout** — A4 portrait page with continuous staff lines, 4 measures per system, double barlines, repeat signs, and more.
+- **Musical Symbols** — Fermata, Coda, Segno, Fine, D.C./D.S., volta brackets (1st/2nd ending), rehearsal marks.
+- **Audio Preview** — Web Audio API synthesizer plays piano-like arpeggios when you build or click chords.
+- **Undo/Redo** — Unlimited history (Ctrl+Z / Ctrl+Shift+Z).
+- **Auto-Save** — LocalStorage persistence. Reload and continue where you left off.
+- **Export** — PNG, HD PNG, and PDF export.
+- **Dark Theme** — Refined dark UI with amber accents, paper-textured page.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the Oxlint configuration
+- React 19
+- TypeScript
+- Vite
+- TailwindCSS v4
+- Zustand (state management)
+- @dnd-kit (drag & drop)
+- html2canvas + jsPDF (export)
+- Web Audio API (preview)
+- Immer (immutable updates)
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Getting Started
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open http://localhost:5173
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+## License
+
+MIT
