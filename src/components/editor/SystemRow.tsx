@@ -1,4 +1,3 @@
-import React from 'react'
 import type { System } from '@/types'
 import { MeasureCell } from './MeasureCell'
 
@@ -43,10 +42,10 @@ export function SystemRow({ system, sectionId, onMeasureClick }: Props) {
     <div className="relative w-full" style={{ minHeight: 44 }}>
       <StaffLines />
       <div className="absolute inset-0 flex items-center">
-        <MeasureDivider />
-        {system.measures.map((measure, idx) => (
-          <React.Fragment key={measure.id}>
-            <div className="flex-1 h-full relative">
+        {system.measures.map((measure) => (
+          <div key={measure.id} className="contents">
+            <MeasureDivider />
+            <div className="flex-1 relative">
               <MeasureCell
                 measure={measure}
                 systemId={system.id}
@@ -54,9 +53,9 @@ export function SystemRow({ system, sectionId, onMeasureClick }: Props) {
                 onClick={onMeasureClick}
               />
             </div>
-            <MeasureDivider />
-          </React.Fragment>
+          </div>
         ))}
+        <MeasureDivider />
       </div>
     </div>
   )

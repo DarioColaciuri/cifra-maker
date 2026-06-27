@@ -30,6 +30,16 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
       windowWidth: page.offsetWidth,
       windowHeight: page.offsetHeight,
       onclone: (clonedDoc) => {
+        // Unwind display:contents elements (unsupported by html2canvas)
+        clonedDoc.querySelectorAll('.contents').forEach((el) => {
+          const parent = el.parentNode
+          if (!parent) return
+          while (el.firstChild) {
+            parent.insertBefore(el.firstChild, el)
+          }
+          el.remove()
+        })
+
         // Force clean rendering
         clonedDoc.documentElement.style.background = '#ffffff'
         clonedDoc.documentElement.style.color = '#000000'
