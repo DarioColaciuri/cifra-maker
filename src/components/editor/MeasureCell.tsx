@@ -129,6 +129,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
 
       {/* Delete button */}
       <button
+        data-export-hide
         onClick={handleDelete}
         className="absolute top-0.5 right-0.5 z-20 w-5 h-5 flex items-center justify-center rounded-full opacity-20 hover:opacity-100 transition-all"
         style={{ color: '#888' }}

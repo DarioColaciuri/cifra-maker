@@ -89,6 +89,26 @@ function patchPage(): RestoreFn {
   return () => restorers.forEach((r) => r())
 }
 
+const HIDE_SELECTOR = [
+  '[data-export-hide]',
+].join(',')
+
+function hideUIElements(page: HTMLElement): Map<HTMLElement, string> {
+  const hidden = new Map<HTMLElement, string>()
+  page.querySelectorAll(HIDE_SELECTOR).forEach((el) => {
+    const htmlEl = el as HTMLElement
+    hidden.set(htmlEl, htmlEl.style.display || '')
+    htmlEl.style.display = 'none'
+  })
+  return hidden
+}
+
+function showUIElements(hidden: Map<HTMLElement, string>): void {
+  hidden.forEach((display, el) => {
+    el.style.display = display
+  })
+}
+
 export async function exportPNG(scale: number = 1): Promise<void> {
   const page = document.querySelector('[data-a4-page]') as HTMLElement | null
   if (!page) {
@@ -96,14 +116,13 @@ export async function exportPNG(scale: number = 1): Promise<void> {
     return
   }
 
-  // Wait for web fonts to load
   await document.fonts.ready
 
-  // Remove box-shadow temporarily to avoid gray bars in export
   const savedShadow = page.style.boxShadow
   page.style.boxShadow = 'none'
 
-  const restore = patchPage()
+  const hidden = hideUIElements(page)
+  const restoreStyles = patchPage()
 
   try {
     const canvas = await html2canvas(page, {
@@ -120,7 +139,8 @@ export async function exportPNG(scale: number = 1): Promise<void> {
     link.click()
   } finally {
     page.style.boxShadow = savedShadow
-    restore()
+    showUIElements(hidden)
+    restoreStyles()
   }
 }
 
@@ -136,7 +156,8 @@ export async function exportPDF(): Promise<void> {
   const savedShadow = page.style.boxShadow
   page.style.boxShadow = 'none'
 
-  const restore = patchPage()
+  const hidden = hideUIElements(page)
+  const restoreStyles = patchPage()
 
   try {
     const canvas = await html2canvas(page, {
@@ -161,6 +182,7 @@ export async function exportPDF(): Promise<void> {
     pdf.save('chord-chart.pdf')
   } finally {
     page.style.boxShadow = savedShadow
-    restore()
+    showUIElements(hidden)
+    restoreStyles()
   }
 }

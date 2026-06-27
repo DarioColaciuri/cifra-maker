@@ -102,18 +102,18 @@ export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1 }: 
       title={`${parts.root + parts.qualitySuffix + parts.extensionText + parts.bassText} (drag to reorder, double-click to edit)`}
     >
       <div className="text-center leading-none inline-block">
-        <span className="font-bold align-baseline" style={{ fontSize: rootSize, color: '#1a1a1a' }}>
+        <span className="font-bold align-baseline" style={{ fontSize: rootSize, color: '#000' }}>
           {chord.root}
         </span>
         {hasSuper && (
-          <span className="font-normal relative" style={{ fontSize: superSize, top: superTop, color: '#444' }}>
+          <span className="font-normal relative" style={{ fontSize: superSize, top: superTop, color: '#333' }}>
             {parts.qualitySuffix && formatQuality(parts.qualitySuffix)}
             {parts.extensionText && chord.extensions.map(formatExtension).join('')}
           </span>
         )}
       </div>
       {parts.bassText && (
-        <div className="text-center leading-none" style={{ fontSize: superSize, color: '#888' }}>
+        <div className="text-center leading-none" style={{ fontSize: superSize, color: '#555' }}>
           {parts.bassText}
         </div>
       )}

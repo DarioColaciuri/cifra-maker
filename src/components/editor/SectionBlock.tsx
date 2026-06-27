@@ -53,6 +53,7 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
         {/* Drag handle */}
         <span
           {...dragHandleListeners}
+          data-export-hide
           className="cursor-grab active:cursor-grabbing flex-shrink-0 opacity-20 group-hover/section:opacity-60 transition-opacity"
           style={{ color: 'var(--text-page)', fontSize: 16, lineHeight: 1 }}
         >
@@ -61,7 +62,7 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
 
         {/* Section label chip */}
         <div
-          className="px-2.5 py-0 rounded-full font-extrabold tracking-wider uppercase"
+          className="px-2.5 py-0.5 rounded-full font-extrabold tracking-wider uppercase"
           style={{
             background: 'rgba(0,0,0,0.06)',
             color: '#222',
@@ -74,7 +75,7 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
           {section.label}
         </div>
 
-        <div className="flex items-center gap-0.5 ml-auto opacity-0 group-hover/section:opacity-100 transition-opacity">
+        <div data-export-hide className="flex items-center gap-0.5 ml-auto opacity-0 group-hover/section:opacity-100 transition-opacity">
           {/* Duplicate button */}
           <button
             onClick={handleDuplicate}
