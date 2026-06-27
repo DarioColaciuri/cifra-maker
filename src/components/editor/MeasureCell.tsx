@@ -120,7 +120,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
       onClick={handleClick}
     >
       {/* Hover outline */}
-      <div className="absolute inset-0 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+      <div data-export-hide className="absolute inset-0 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
         style={{
           border: '1px solid rgba(226, 168, 62, 0.3)',
           background: 'rgba(226, 168, 62, 0.06)',

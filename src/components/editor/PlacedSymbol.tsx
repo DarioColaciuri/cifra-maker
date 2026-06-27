@@ -71,6 +71,7 @@ export function PlacedSymbol({ symbolId, sectionId, systemId, measureId, childre
       {children}
       {/* Remove button */}
       <button
+        data-export-hide
         onClick={handleRemove}
         onPointerDown={(e) => e.stopPropagation()}
         className="absolute -top-2 -right-2 w-4 h-4 flex items-center justify-center rounded-full opacity-0 group-hover/sym:opacity-100 transition-opacity z-30"

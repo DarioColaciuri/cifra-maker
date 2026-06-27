@@ -93,8 +93,8 @@ export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1 }: 
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className="cursor-grab active:cursor-grabbing select-none group px-1 rounded transition-colors"
-      style={{ ...style }}
+      className="cursor-grab active:cursor-grabbing select-none group px-1 rounded transition-colors flex flex-col items-center justify-center"
+      style={{ ...style, minHeight: 28 }}
       onClick={handleClick}
       onDoubleClick={handleEdit}
       onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(226,168,62,0.08)' }}

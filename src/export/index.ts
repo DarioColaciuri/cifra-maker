@@ -8,6 +8,9 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
   const savedIds = [...uiStore.selectedSectionIds]
   uiStore.clearSelection()
 
+  // Wait for React re-render after clearing selection
+  await new Promise(r => setTimeout(r, 50))
+
   page.querySelectorAll('[data-export-hide]').forEach((el) => { (el as HTMLElement).style.display = 'none' })
   const noiseDiv = page.querySelector('[data-noise]') as HTMLElement | null
   if (noiseDiv) noiseDiv.style.display = 'none'
