@@ -3,36 +3,36 @@ import jsPDF from 'jspdf'
 
 async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanvasElement> {
   // Hide UI elements
-  const hiddenEls = page.querySelectorAll('[data-export-hide]')
-  hiddenEls.forEach((el) => { (el as HTMLElement).style.display = 'none' })
+  page.querySelectorAll('[data-export-hide]').forEach((el) => { (el as HTMLElement).style.display = 'none' })
 
-  const savedShadow = page.style.boxShadow
-  page.style.boxShadow = 'none'
-
-  const savedPageBg = page.style.background
-  page.style.background = '#ffffff'
-
-  // Remove noise div inside page
+  // Remove page noise texture
   const noiseDiv = page.querySelector('[data-noise]') as HTMLElement | null
   if (noiseDiv) noiseDiv.style.display = 'none'
 
-  // Save and modify body to prevent dark theme from bleeding
-  const body = document.body
-  const savedBodyBg = body.style.background || ''
-  const savedBodyColor = body.style.color || ''
-  body.style.background = '#ffffff'
-  body.style.color = '#000000'
+  // Save original values
+  const savedPageStyle = page.getAttribute('style') || ''
 
-  // Remove body::before noise by temporarily hiding it
-  // We do this by injecting a style override
+  // Force page to look clean
+  page.style.boxShadow = 'none'
+  page.style.background = '#ffffff'
+
+  // Force body clean
+  const savedBodyStyle = document.body.getAttribute('style') || ''
+  document.body.style.background = '#ffffff'
+  document.body.style.color = '#000000'
+
+  // Add a <style> at end of head to override body::before and dark backgrounds
+  // Must be last to have highest cascade priority
   const overrideStyle = document.createElement('style')
-  overrideStyle.id = 'export-override'
+  overrideStyle.id = 'export-fix'
   overrideStyle.textContent = `
-    body::before, body::after { display: none !important; }
-    html, body { background: #ffffff !important; color: #000000 !important; }
-    * { text-shadow: none !important; }
+    html, body, #root { background: #ffffff !important; color: #000000 !important; }
+    body::before, body::after { display: none !important; content: none !important; }
   `
   document.head.appendChild(overrideStyle)
+
+  // Force style recalculation
+  void document.body.offsetHeight
 
   await document.fonts.ready
 
@@ -40,19 +40,37 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
     const canvas = await html2canvas(page, {
       scale,
       useCORS: true,
+      allowTaint: true,
       backgroundColor: '#ffffff',
       windowWidth: page.offsetWidth,
       windowHeight: page.offsetHeight,
+      onclone: (clonedDoc) => {
+        // In the clone, ensure clean rendering
+        clonedDoc.body.style.background = '#ffffff'
+        clonedDoc.body.style.color = '#000000'
+        clonedDoc.documentElement.style.background = '#ffffff'
+        
+        // Add override in clone too
+        const cloneStyle = clonedDoc.createElement('style')
+        cloneStyle.textContent = `
+          html, body { background: #ffffff !important; color: #000000 !important; }
+          body::before, body::after { display: none !important; content: none !important; }
+        `
+        clonedDoc.head.appendChild(cloneStyle)
+        
+        // Hide UI in clone
+        clonedDoc.querySelectorAll('[data-export-hide]').forEach((el) => {
+          (el as HTMLElement).style.display = 'none'
+        })
+      },
     })
     return canvas
   } finally {
-    // Restore everything
-    hiddenEls.forEach((el) => { (el as HTMLElement).style.display = '' })
-    page.style.boxShadow = savedShadow
-    page.style.background = savedPageBg
+    // Restore
+    page.setAttribute('style', savedPageStyle)
+    document.body.setAttribute('style', savedBodyStyle)
     if (noiseDiv) noiseDiv.style.display = ''
-    body.style.background = savedBodyBg
-    body.style.color = savedBodyColor
+    page.querySelectorAll('[data-export-hide]').forEach((el) => { (el as HTMLElement).style.display = '' })
     overrideStyle.remove()
   }
 }
@@ -60,7 +78,6 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
 export async function exportPNG(scale: number = 1): Promise<void> {
   const page = document.querySelector('[data-a4-page]') as HTMLElement | null
   if (!page) { console.error('A4 page element not found'); return }
-
   const canvas = await captureExport(page, scale)
   const link = document.createElement('a')
   link.download = `chord-chart${scale > 1 ? '-hd' : ''}.png`
@@ -71,19 +88,9 @@ export async function exportPNG(scale: number = 1): Promise<void> {
 export async function exportPDF(): Promise<void> {
   const page = document.querySelector('[data-a4-page]') as HTMLElement | null
   if (!page) { console.error('A4 page element not found'); return }
-
   const canvas = await captureExport(page, 2)
-
   const imgData = canvas.toDataURL('image/png')
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-  })
-
-  const pdfWidth = pdf.internal.pageSize.getWidth()
-  const pdfHeight = pdf.internal.pageSize.getHeight()
-
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight())
   pdf.save('chord-chart.pdf')
 }
