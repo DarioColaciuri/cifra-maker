@@ -9,7 +9,7 @@ const uiLabelClass = "text-[10px] font-medium block mb-1 tracking-wide"
 
 export function RightSidebar() {
   const document = useDocumentStore((s) => s.document)
-  const { updateSectionSpacing, updateSectionLabel, setNotationStyle, updateChord, updateSectionGap, updatePageTopMargin, updateTitleSectionGap } = useDocumentStore()
+  const { updateTitle, updateSubtitle, updateSectionSpacing, updateSectionLabel, setNotationStyle, updateChord, updateSectionGap, updatePageTopMargin, updateTitleSectionGap } = useDocumentStore()
   const { selectedSectionIds, selectedChordIds, selectedChordContext, clearSelection } = useUIStore()
 
   const selectedSection = selectedSectionIds[0]
@@ -69,7 +69,33 @@ export function RightSidebar() {
           </h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
-          <div>
+          {/* Title & Subtitle */}
+          <div className="space-y-3">
+            <div>
+              <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Title</label>
+              <input
+                type="text"
+                value={document.title.text}
+                onChange={(e) => updateTitle({ text: e.target.value })}
+                placeholder="Enter title..."
+                className={uiInputClass}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Subtitle</label>
+              <input
+                type="text"
+                value={document.subtitle.text}
+                onChange={(e) => updateSubtitle({ text: e.target.value })}
+                placeholder="Enter subtitle..."
+                className={uiInputClass}
+                style={inputStyle}
+              />
+            </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
             <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Notation</label>
             <div className="flex gap-1.5">
               {(['symbols', 'text'] as const).map((s) => {

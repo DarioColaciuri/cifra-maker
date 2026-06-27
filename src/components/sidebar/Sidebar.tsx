@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { DocumentPanel } from './DocumentPanel'
 import { SectionPanel } from './SectionPanel'
 import { MeasurePanel } from './MeasurePanel'
 import { ChordPanel } from './ChordPanel'
@@ -7,7 +6,6 @@ import { SymbolPanel } from './SymbolPanel'
 import { ExportPanel } from './ExportPanel'
 
 const PANELS = [
-  { id: 'document', label: 'Document', icon: 'D', Component: DocumentPanel },
   { id: 'section', label: 'Sections', icon: 'S', Component: SectionPanel },
   { id: 'measure', label: 'Measures', icon: 'M', Component: MeasurePanel },
   { id: 'chord', label: 'Chords', icon: 'C', Component: ChordPanel },
@@ -16,7 +14,7 @@ const PANELS = [
 ]
 
 export function Sidebar() {
-  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set(['document', 'chord']))
+  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set(['chord']))
 
   const togglePanel = (id: string) => {
     setOpenPanels((prev) => {
