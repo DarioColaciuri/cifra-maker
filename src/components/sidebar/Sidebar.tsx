@@ -27,7 +27,7 @@ export function Sidebar() {
 
   return (
     <div
-      className="w-[260px] h-full flex flex-col flex-shrink-0 select-none"
+      className="w-[260px] h-full flex flex-col flex-shrink-0 select-none overflow-y-auto"
       style={{
         background: 'var(--bg-sidebar)',
         borderRight: '1px solid var(--border-subtle)',
@@ -60,7 +60,7 @@ export function Sidebar() {
       </div>
 
       {/* Panels */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1">
         {PANELS.map(({ id, label, icon, Component }, idx) => {
           const isOpen = openPanels.has(id)
           return (
