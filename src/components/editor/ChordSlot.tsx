@@ -91,27 +91,29 @@ export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1 }: 
   return (
     <div
       ref={setNodeRef}
-      style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab active:cursor-grabbing select-none group px-1 rounded hover:bg-blue-50/50 transition-colors"
+      className="cursor-grab active:cursor-grabbing select-none group px-1 rounded transition-colors"
+      style={{ ...style }}
       onClick={handleClick}
       onDoubleClick={handleEdit}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(226,168,62,0.08)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
       title={`${parts.root + parts.qualitySuffix + parts.extensionText + parts.bassText} (drag to reorder, double-click to edit)`}
     >
       <div className="text-center leading-none inline-block">
-        <span className="font-bold text-gray-900 align-baseline" style={{ fontSize: rootSize }}>
+        <span className="font-bold align-baseline" style={{ fontSize: rootSize, color: '#1a1a1a' }}>
           {chord.root}
         </span>
         {hasSuper && (
-          <span className="font-normal text-gray-700 relative" style={{ fontSize: superSize, top: superTop }}>
+          <span className="font-normal relative" style={{ fontSize: superSize, top: superTop, color: '#444' }}>
             {parts.qualitySuffix && formatQuality(parts.qualitySuffix)}
             {parts.extensionText && chord.extensions.map(formatExtension).join('')}
           </span>
         )}
       </div>
       {parts.bassText && (
-        <div className="text-center text-gray-500 leading-none" style={{ fontSize: superSize }}>
+        <div className="text-center leading-none" style={{ fontSize: superSize, color: '#888' }}>
           {parts.bassText}
         </div>
       )}
