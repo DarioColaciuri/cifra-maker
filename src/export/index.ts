@@ -80,7 +80,7 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
         clonedDoc.querySelectorAll('[data-export-nudge-sm]').forEach((el) => {
           const htmlEl = el as HTMLElement
           htmlEl.style.display = 'inline-block'
-          htmlEl.style.transform = 'translateY(-3px)'
+          htmlEl.style.transform = 'translateY(-4.5px)'
         })
 
         clonedDoc.querySelectorAll('[data-export-hide]').forEach((el) => {
