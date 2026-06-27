@@ -132,9 +132,9 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
         data-export-hide
         onClick={handleDelete}
         className="absolute top-0.5 right-0.5 z-20 w-5 h-5 flex items-center justify-center rounded-full opacity-20 hover:opacity-100 transition-all"
-        style={{ color: '#888' }}
+        style={{ color: '#000' }}
         onMouseEnter={(e) => { e.currentTarget.style.color = '#c0392b'; e.currentTarget.style.background = 'rgba(192,57,43,0.08)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = '#888'; e.currentTarget.style.background = 'transparent' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = '#000'; e.currentTarget.style.background = 'transparent' }}
         title="Delete measure"
       >
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,22 +146,22 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
       <div className="absolute top-0 left-0 right-0 flex justify-center gap-1 z-10" style={{ marginTop: -20 }}>
         {measure.fermata && (
           <PlacedSymbol symbolId="fermata" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
-            <span className="text-sm" style={{ color: '#333' }}>𝄐</span>
+            <span className="text-sm" style={{ color: '#000' }}>𝄐</span>
           </PlacedSymbol>
         )}
         {measure.segno && (
           <PlacedSymbol symbolId="segno" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
-            <span className="text-xs font-bold" style={{ color: '#333' }}>𝄉</span>
+            <span className="text-xs font-bold" style={{ color: '#000' }}>𝄉</span>
           </PlacedSymbol>
         )}
         {measure.coda && (
           <PlacedSymbol symbolId="coda" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
-            <span className="text-xs font-bold" style={{ color: '#333' }}>𝄌</span>
+            <span className="text-xs font-bold" style={{ color: '#000' }}>𝄌</span>
           </PlacedSymbol>
         )}
         {measure.rehearsalMark && (
           <PlacedSymbol symbolId="rehearsalMark" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
-            <span className="text-[10px] font-bold border px-1 rounded" style={{ borderColor: 'rgba(0,0,0,0.2)', color: '#555' }}>
+            <span className="text-[10px] font-bold border px-1 rounded" style={{ borderColor: 'rgba(0,0,0,0.2)', color: '#000' }}>
               {measure.rehearsalMark}
             </span>
           </PlacedSymbol>
@@ -172,7 +172,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
       {(measure.firstEnding || measure.secondEnding) && (
         <div className="absolute top-0 left-0 right-0 z-10" style={{ marginTop: -16 }}>
           <div className="h-3 mx-1" style={{ borderTop: '1px solid rgba(0,0,0,0.3)', borderLeft: '1px solid rgba(0,0,0,0.3)' }} />
-          <div className="text-[10px] font-medium text-center flex justify-center gap-1" style={{ marginTop: -18, marginLeft: 4, color: '#555' }}>
+          <div className="text-[10px] font-medium text-center flex justify-center gap-1" style={{ marginTop: -18, marginLeft: 4, color: '#000' }}>
             {measure.firstEnding && (
               <PlacedSymbol symbolId="firstEnding" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
                 <span>1.</span>
@@ -191,17 +191,17 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
       <div className="absolute bottom-0 left-0 right-0 text-center z-10" style={{ marginBottom: -18 }}>
         {measure.fine && (
           <PlacedSymbol symbolId="fine" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
-            <span className="text-[10px] font-bold" style={{ color: '#333' }}>Fine</span>
+            <span className="text-[10px] font-bold" style={{ color: '#000' }}>Fine</span>
           </PlacedSymbol>
         )}
         {measure.dcAlFine && (
           <PlacedSymbol symbolId="dcAlFine" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
-            <span className="text-[10px] font-bold" style={{ color: '#333' }}>D.C. al Fine</span>
+            <span className="text-[10px] font-bold" style={{ color: '#000' }}>D.C. al Fine</span>
           </PlacedSymbol>
         )}
         {measure.dsAlCoda && (
           <PlacedSymbol symbolId="dsAlCoda" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
-            <span className="text-[10px] font-bold" style={{ color: '#333' }}>D.S. al Coda</span>
+            <span className="text-[10px] font-bold" style={{ color: '#000' }}>D.S. al Coda</span>
           </PlacedSymbol>
         )}
       </div>
@@ -211,10 +211,10 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
         <div className="absolute left-0 top-0 bottom-0 flex items-center z-10" style={{ marginLeft: -8 }}>
           <PlacedSymbol symbolId="repeatStart" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
             <div className="flex items-center gap-[1px]">
-              <div className="w-[2px] h-7" style={{ background: '#333' }} />
-              <div className="w-[1px] h-7" style={{ background: '#ddd' }} />
+              <div className="w-[2px] h-7" style={{ background: '#000' }} />
+              <div className="w-[1px] h-7" style={{ background: '#000' }} />
               <div className="flex flex-col gap-[3px]">
-                <div className="w-1 h-1 rounded-full" style={{ background: '#333' }} /><div className="w-1 h-1 rounded-full" style={{ background: '#333' }} />
+                <div className="w-1 h-1 rounded-full" style={{ background: '#000' }} /><div className="w-1 h-1 rounded-full" style={{ background: '#000' }} />
               </div>
             </div>
           </PlacedSymbol>
@@ -225,10 +225,10 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
           <PlacedSymbol symbolId="repeatEnd" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
             <div className="flex items-center gap-[1px]">
               <div className="flex flex-col gap-[3px]">
-                <div className="w-1 h-1 rounded-full" style={{ background: '#333' }} /><div className="w-1 h-1 rounded-full" style={{ background: '#333' }} />
+                <div className="w-1 h-1 rounded-full" style={{ background: '#000' }} /><div className="w-1 h-1 rounded-full" style={{ background: '#000' }} />
               </div>
-              <div className="w-[1px] h-7" style={{ background: '#ddd' }} />
-              <div className="w-[2px] h-7" style={{ background: '#333' }} />
+              <div className="w-[1px] h-7" style={{ background: '#000' }} />
+              <div className="w-[2px] h-7" style={{ background: '#000' }} />
             </div>
           </PlacedSymbol>
         </div>
@@ -239,7 +239,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
         <div className="absolute right-0 top-0 bottom-0 flex items-center z-10" style={{ marginRight: -4 }}>
           <PlacedSymbol symbolId="doubleBarline" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
             <div className="flex gap-[2px]">
-              <div className="w-[2px] h-7" style={{ background: '#444' }} /><div className="w-[2px] h-7" style={{ background: '#444' }} />
+              <div className="w-[2px] h-7" style={{ background: '#000' }} /><div className="w-[2px] h-7" style={{ background: '#000' }} />
             </div>
           </PlacedSymbol>
         </div>

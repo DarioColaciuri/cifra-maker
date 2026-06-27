@@ -62,10 +62,10 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
 
         {/* Section label chip */}
         <div
-          className="px-2.5 py-0.5 rounded-full font-extrabold tracking-wider uppercase"
+          className="px-2.5 py-1 rounded-full font-extrabold tracking-wider uppercase"
           style={{
             background: 'rgba(0,0,0,0.06)',
-            color: '#222',
+            color: '#000',
             border: '1px solid rgba(0,0,0,0.1)',
             fontFamily: "'Manrope', system-ui, sans-serif",
             fontSize: 12,

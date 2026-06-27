@@ -19,7 +19,7 @@ export function DocumentHeader({ title, subtitle }: Props) {
   return (
     <div className="mb-6">
       {title.text && (
-        <div style={{ ...textStyle(title), color: '#1a1a1a' }} className="leading-tight">
+        <div style={{ ...textStyle(title), color: '#000' }} className="leading-tight">
           {title.text}
         </div>
       )}

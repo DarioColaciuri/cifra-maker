@@ -106,14 +106,14 @@ export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1 }: 
           {chord.root}
         </span>
         {hasSuper && (
-          <span className="font-normal relative" style={{ fontSize: superSize, top: superTop, color: '#333' }}>
+          <span className="font-normal relative" style={{ fontSize: superSize, top: superTop, color: '#000' }}>
             {parts.qualitySuffix && formatQuality(parts.qualitySuffix)}
             {parts.extensionText && chord.extensions.map(formatExtension).join('')}
           </span>
         )}
       </div>
       {parts.bassText && (
-        <div className="text-center leading-none" style={{ fontSize: superSize, color: '#555' }}>
+        <div className="text-center leading-none" style={{ fontSize: superSize, color: '#000' }}>
           {parts.bassText}
         </div>
       )}
