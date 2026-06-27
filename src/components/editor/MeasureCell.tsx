@@ -8,6 +8,35 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { getMeasureWidth } from '@/utils/layout'
 import { formatChordName } from '@/utils/chord'
 
+function RepeatBarGhost({ type }: { type: 'start' | 'end' }) {
+  const amber = 'rgba(226, 168, 62, 0.3)'
+  const darkAmber = 'rgba(226, 168, 62, 0.25)'
+  const dotAmber = 'rgba(226, 168, 62, 0.35)'
+
+  if (type === 'start') {
+    return (
+      <div className="flex items-center gap-[1px]">
+        <div className="w-[2px] h-7" style={{ background: darkAmber }} />
+        <div className="w-[1px] h-7" style={{ background: amber }} />
+        <div className="flex flex-col gap-[3px]">
+          <div className="w-1 h-1 rounded-full" style={{ background: dotAmber }} />
+          <div className="w-1 h-1 rounded-full" style={{ background: dotAmber }} />
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="flex items-center gap-[1px]">
+      <div className="flex flex-col gap-[3px]">
+        <div className="w-1 h-1 rounded-full" style={{ background: dotAmber }} />
+        <div className="w-1 h-1 rounded-full" style={{ background: dotAmber }} />
+      </div>
+      <div className="w-[1px] h-7" style={{ background: amber }} />
+      <div className="w-[2px] h-7" style={{ background: darkAmber }} />
+    </div>
+  )
+}
+
 interface Props {
   measure: Measure
   systemId: string
@@ -178,8 +207,8 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
         <div className="absolute left-0 top-0 bottom-0 flex items-center z-10" style={{ marginLeft: -8 }}>
           <PlacedSymbol symbolId="repeatStart" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
             <div className="flex items-center gap-[1px]">
-              <div className="w-[2px] h-10 bg-gray-800" />
-              <div className="w-[1px] h-10 bg-gray-300" />
+              <div className="w-[2px] h-7 bg-gray-800" />
+              <div className="w-[1px] h-7 bg-gray-300" />
               <div className="flex flex-col gap-[3px]">
                 <div className="w-1 h-1 rounded-full bg-gray-800" /><div className="w-1 h-1 rounded-full bg-gray-800" />
               </div>
@@ -194,8 +223,8 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
               <div className="flex flex-col gap-[3px]">
                 <div className="w-1 h-1 rounded-full bg-gray-800" /><div className="w-1 h-1 rounded-full bg-gray-800" />
               </div>
-              <div className="w-[1px] h-10 bg-gray-300" />
-              <div className="w-[2px] h-10 bg-gray-800" />
+              <div className="w-[1px] h-7 bg-gray-300" />
+              <div className="w-[2px] h-7 bg-gray-800" />
             </div>
           </PlacedSymbol>
         </div>
@@ -206,34 +235,62 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
         <div className="absolute right-0 top-0 bottom-0 flex items-center z-10" style={{ marginRight: -4 }}>
           <PlacedSymbol symbolId="doubleBarline" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
             <div className="flex gap-[2px]">
-              <div className="w-[2px] h-12 bg-gray-700" /><div className="w-[2px] h-12 bg-gray-700" />
+              <div className="w-[2px] h-7 bg-gray-700" /><div className="w-[2px] h-7 bg-gray-700" />
             </div>
           </PlacedSymbol>
         </div>
       )}
 
-      {/* Ghost preview for symbol/chord drags */}
-      {dragOverMeasureId === measure.id && activeDragType && (activeDragType === 'symbol' || activeDragType === 'placed-symbol') && (
-        <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-          <span style={{
-            fontSize: 28,
-            opacity: 0.3,
-            color: 'var(--accent)',
-            filter: 'blur(0.5px)',
-          }}>
-            {activeDragSymbolId === 'repeatStart' ? '𝄆' :
-             activeDragSymbolId === 'repeatEnd' ? '𝄇' :
-             activeDragSymbolId === 'doubleBarline' ? '𝄁' :
-             activeDragSymbolId === 'fermata' ? '𝄐' :
-             activeDragSymbolId === 'fine' ? '𝄂' :
-             activeDragSymbolId === 'dcAlFine' ? 'D.C. al Fine' :
-             activeDragSymbolId === 'dsAlCoda' ? 'D.S. al Coda' :
-             activeDragSymbolId === 'coda' ? '𝄌' :
-             activeDragSymbolId === 'segno' ? '𝄉' :
-             activeDragSymbolId === 'firstEnding' ? '1.' :
-             activeDragSymbolId === 'secondEnding' ? '2.' : '?'}
-          </span>
-        </div>
+      {/* Ghost preview for symbol drags — positioned exactly where symbol will land */}
+      {dragOverMeasureId === measure.id && (activeDragType === 'symbol' || activeDragType === 'placed-symbol') && activeDragSymbolId && (
+        <>
+          {/* repeatStart ghost — left edge */}
+          {(activeDragSymbolId === 'repeatStart') && (
+            <div className="absolute left-0 top-0 bottom-0 flex items-center z-30 pointer-events-none" style={{ marginLeft: -8 }}>
+              <RepeatBarGhost type="start" />
+            </div>
+          )}
+          {/* repeatEnd ghost — right edge */}
+          {(activeDragSymbolId === 'repeatEnd') && (
+            <div className="absolute right-0 top-0 bottom-0 flex items-center z-30 pointer-events-none" style={{ marginRight: -8 }}>
+              <RepeatBarGhost type="end" />
+            </div>
+          )}
+          {/* doubleBarline ghost — right edge */}
+          {(activeDragSymbolId === 'doubleBarline') && (
+            <div className="absolute right-0 top-0 bottom-0 flex items-center z-30 pointer-events-none" style={{ marginRight: -4 }}>
+              <div className="flex gap-[2px]">
+                <div className="w-[2px] h-7 bg-amber-400/30" />
+                <div className="w-[2px] h-7 bg-amber-400/30" />
+              </div>
+            </div>
+          )}
+          {/* Above-measure ghosts: fermata, segno, coda */}
+          {(activeDragSymbolId === 'fermata' || activeDragSymbolId === 'segno' || activeDragSymbolId === 'coda') && (
+            <div className="absolute top-0 left-0 right-0 flex justify-center z-30 pointer-events-none" style={{ marginTop: -20 }}>
+              <span style={{ fontSize: 18, opacity: 0.35, color: 'var(--accent)' }}>
+                {activeDragSymbolId === 'fermata' ? '𝄐' : activeDragSymbolId === 'segno' ? '𝄉' : '𝄌'}
+              </span>
+            </div>
+          )}
+          {/* 1st/2nd ending ghost — above */}
+          {(activeDragSymbolId === 'firstEnding' || activeDragSymbolId === 'secondEnding') && (
+            <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none" style={{ marginTop: -16 }}>
+              <div className="border-t border-l border-amber-400/30 h-3 mx-1" />
+              <div className="text-[10px] font-medium text-center text-amber-400/30" style={{ marginTop: -18, marginLeft: 4 }}>
+                {activeDragSymbolId === 'firstEnding' ? '1.' : '2.'}
+              </div>
+            </div>
+          )}
+          {/* Below-measure ghosts: fine, dc, ds */}
+          {(activeDragSymbolId === 'fine' || activeDragSymbolId === 'dcAlFine' || activeDragSymbolId === 'dsAlCoda') && (
+            <div className="absolute bottom-0 left-0 right-0 text-center z-30 pointer-events-none" style={{ marginBottom: -18 }}>
+              <span className="font-bold text-amber-400/30" style={{ fontSize: 10, opacity: 0.35 }}>
+                {activeDragSymbolId === 'fine' ? 'Fine' : activeDragSymbolId === 'dcAlFine' ? 'D.C. al Fine' : 'D.S. al Coda'}
+              </span>
+            </div>
+          )}
+        </>
       )}
 
       {/* Chords — sortable within the measure */}
