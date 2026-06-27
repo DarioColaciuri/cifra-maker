@@ -208,11 +208,11 @@ export function RightSidebar() {
                   {selectedSection.sectionSpacing}px
                 </span>
               </div>
-              <input
+                <input
                 type="range"
                 min={0}
                 max={120}
-                step={4}
+                step={1}
                 value={selectedSection.sectionSpacing}
                 onChange={(e) => updateSectionGap(selectedSection.id, Number(e.target.value))}
                 className="w-full"

@@ -49,7 +49,7 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
       onMouseLeave={(e) => { if (!isSelected && !isDragging) e.currentTarget.style.borderColor = 'transparent' }}
     >
       {/* Section header with drag handle */}
-      <div className="flex items-center gap-2 px-3 py-1.5">
+      <div className="flex items-center gap-2 px-3 py-0.5">
         {/* Drag handle */}
         <span
           {...dragHandleListeners}
@@ -61,7 +61,7 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
 
         {/* Section label chip */}
         <div
-          className="px-3 py-0.5 rounded-full font-extrabold tracking-wider uppercase"
+          className="px-2.5 py-0 rounded-full font-extrabold tracking-wider uppercase"
           style={{
             background: 'rgba(0,0,0,0.06)',
             color: '#222',
@@ -106,11 +106,11 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
       </div>
 
       {section.systems.length === 0 ? (
-        <div className="px-4 pb-2 text-center text-xs py-3" style={{ color: '#bbb' }}>
+        <div className="px-4 pb-1 text-center text-xs py-2" style={{ color: '#bbb' }}>
           Click <span className="font-medium" style={{ color: '#999' }}>+ Add 4 Measures</span> to add measures
         </div>
       ) : (
-        <div className="px-3 pb-2">
+        <div className="px-3 pb-1">
           {section.systems.map((system, sysIdx) => (
             <div
               key={system.id}
