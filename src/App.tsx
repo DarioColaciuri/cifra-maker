@@ -152,7 +152,7 @@ export default function App() {
       }
     }
 
-    // CASE 3: Symbol dropped on a measure
+    // CASE 3: Symbol dropped on a measure (from sidebar)
     if (activeData.type === 'symbol' && activeData.symbolId) {
       if (overData?.type === 'measure') {
         const symbolId = activeData.symbolId
@@ -182,6 +182,30 @@ export default function App() {
           const store = useDocumentStore.getState()
           store.updateMeasure(overData.sectionId!, overData.systemId!, overData.measureId!, updates)
         }
+      }
+      return
+    }
+
+    // CASE 4: Placed symbol dragged to another measure (move symbol)
+    if (activeData.type === 'placed-symbol' && activeData.symbolId) {
+      if (overData?.type === 'measure') {
+        const symbolId = activeData.symbolId
+        const fromSectionId = activeData.sectionId as string
+        const fromSystemId = activeData.systemId as string
+        const fromMeasureId = activeData.measureId as string
+
+        const toSectionId = overData.sectionId as string
+        const toSystemId = overData.systemId as string
+        const toMeasureId = overData.measureId as string
+
+        // Don't do anything if dropping on same measure
+        if (fromMeasureId === toMeasureId) return
+
+        const store = useDocumentStore.getState()
+        // Remove from source
+        store.updateMeasure(fromSectionId, fromSystemId, fromMeasureId, { [symbolId]: false })
+        // Add to target
+        store.updateMeasure(toSectionId, toSystemId, toMeasureId, { [symbolId]: true })
       }
       return
     }

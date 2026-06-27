@@ -1,5 +1,6 @@
 import type { Measure } from '@/types'
 import { ChordSlot } from './ChordSlot'
+import { PlacedSymbol } from './PlacedSymbol'
 import { useDocumentStore } from '@/stores/documentStore'
 import { useUIStore } from '@/stores/uiStore'
 import { useDroppable } from '@dnd-kit/core'
@@ -109,11 +110,27 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
 
       {/* Symbols above measure */}
       <div className="absolute top-0 left-0 right-0 flex justify-center gap-1 z-10" style={{ marginTop: -20 }}>
-        {measure.fermata && <span className="text-sm text-gray-700" title="Fermata">𝄐</span>}
-        {measure.segno && <span className="text-xs font-bold text-gray-700" title="Segno">𝄉</span>}
-        {measure.coda && <span className="text-xs font-bold text-gray-700" title="Coda">𝄌</span>}
+        {measure.fermata && (
+          <PlacedSymbol symbolId="fermata" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-sm" style={{ color: '#333' }}>𝄐</span>
+          </PlacedSymbol>
+        )}
+        {measure.segno && (
+          <PlacedSymbol symbolId="segno" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-xs font-bold" style={{ color: '#333' }}>𝄉</span>
+          </PlacedSymbol>
+        )}
+        {measure.coda && (
+          <PlacedSymbol symbolId="coda" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-xs font-bold" style={{ color: '#333' }}>𝄌</span>
+          </PlacedSymbol>
+        )}
         {measure.rehearsalMark && (
-          <span className="text-[10px] font-bold border border-gray-300 px-1 rounded text-gray-600">{measure.rehearsalMark}</span>
+          <PlacedSymbol symbolId="rehearsalMark" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-[10px] font-bold border px-1 rounded" style={{ borderColor: 'rgba(0,0,0,0.2)', color: '#555' }}>
+              {measure.rehearsalMark}
+            </span>
+          </PlacedSymbol>
         )}
       </div>
 
@@ -121,50 +138,76 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
       {(measure.firstEnding || measure.secondEnding) && (
         <div className="absolute top-0 left-0 right-0 z-10" style={{ marginTop: -16 }}>
           <div className="border-t border-l border-gray-500 h-3 mx-1" />
-          <div className="text-[10px] text-gray-700 font-medium text-center" style={{ marginTop: -18, marginLeft: 4 }}>
-            {measure.firstEnding && '1.'}
-            {measure.secondEnding && '2.'}
+          <div className="text-[10px] font-medium text-center flex justify-center gap-1" style={{ marginTop: -18, marginLeft: 4, color: '#555' }}>
+            {measure.firstEnding && (
+              <PlacedSymbol symbolId="firstEnding" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+                <span>1.</span>
+              </PlacedSymbol>
+            )}
+            {measure.secondEnding && (
+              <PlacedSymbol symbolId="secondEnding" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+                <span>2.</span>
+              </PlacedSymbol>
+            )}
           </div>
         </div>
       )}
 
       {/* Fine / D.C. / D.S. below */}
       <div className="absolute bottom-0 left-0 right-0 text-center z-10" style={{ marginBottom: -18 }}>
-        {measure.fine && <span className="text-[10px] font-bold text-gray-700">Fine</span>}
-        {measure.dcAlFine && <span className="text-[10px] font-bold text-gray-700">D.C. al Fine</span>}
-        {measure.dsAlCoda && <span className="text-[10px] font-bold text-gray-700">D.S. al Coda</span>}
+        {measure.fine && (
+          <PlacedSymbol symbolId="fine" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-[10px] font-bold" style={{ color: '#333' }}>Fine</span>
+          </PlacedSymbol>
+        )}
+        {measure.dcAlFine && (
+          <PlacedSymbol symbolId="dcAlFine" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-[10px] font-bold" style={{ color: '#333' }}>D.C. al Fine</span>
+          </PlacedSymbol>
+        )}
+        {measure.dsAlCoda && (
+          <PlacedSymbol symbolId="dsAlCoda" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-[10px] font-bold" style={{ color: '#333' }}>D.S. al Coda</span>
+          </PlacedSymbol>
+        )}
       </div>
 
       {/* Repeat symbols */}
       {measure.repeatStart && (
         <div className="absolute left-0 top-0 bottom-0 flex items-center z-10" style={{ marginLeft: -8 }}>
-          <div className="flex items-center gap-[1px]">
-            <div className="w-[2px] h-10 bg-gray-800" />
-            <div className="w-[1px] h-10 bg-gray-300" />
-            <div className="flex flex-col gap-[3px]">
-              <div className="w-1 h-1 rounded-full bg-gray-800" /><div className="w-1 h-1 rounded-full bg-gray-800" />
+          <PlacedSymbol symbolId="repeatStart" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <div className="flex items-center gap-[1px]">
+              <div className="w-[2px] h-10 bg-gray-800" />
+              <div className="w-[1px] h-10 bg-gray-300" />
+              <div className="flex flex-col gap-[3px]">
+                <div className="w-1 h-1 rounded-full bg-gray-800" /><div className="w-1 h-1 rounded-full bg-gray-800" />
+              </div>
             </div>
-          </div>
+          </PlacedSymbol>
         </div>
       )}
       {measure.repeatEnd && (
         <div className="absolute right-0 top-0 bottom-0 flex items-center z-10" style={{ marginRight: -8 }}>
-          <div className="flex items-center gap-[1px]">
-            <div className="flex flex-col gap-[3px]">
-              <div className="w-1 h-1 rounded-full bg-gray-800" /><div className="w-1 h-1 rounded-full bg-gray-800" />
+          <PlacedSymbol symbolId="repeatEnd" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <div className="flex items-center gap-[1px]">
+              <div className="flex flex-col gap-[3px]">
+                <div className="w-1 h-1 rounded-full bg-gray-800" /><div className="w-1 h-1 rounded-full bg-gray-800" />
+              </div>
+              <div className="w-[1px] h-10 bg-gray-300" />
+              <div className="w-[2px] h-10 bg-gray-800" />
             </div>
-            <div className="w-[1px] h-10 bg-gray-300" />
-            <div className="w-[2px] h-10 bg-gray-800" />
-          </div>
+          </PlacedSymbol>
         </div>
       )}
 
       {/* Double barline */}
       {measure.doubleBarline && (
         <div className="absolute right-0 top-0 bottom-0 flex items-center z-10" style={{ marginRight: -4 }}>
-          <div className="flex gap-[2px]">
-            <div className="w-[2px] h-12 bg-gray-700" /><div className="w-[2px] h-12 bg-gray-700" />
-          </div>
+          <PlacedSymbol symbolId="doubleBarline" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <div className="flex gap-[2px]">
+              <div className="w-[2px] h-12 bg-gray-700" /><div className="w-[2px] h-12 bg-gray-700" />
+            </div>
+          </PlacedSymbol>
         </div>
       )}
 
