@@ -1,6 +1,6 @@
 import { useDocumentStore } from '@/stores/documentStore'
 import { useUIStore } from '@/stores/uiStore'
-import { QUALITIES, EXTENSIONS } from '@/constants'
+import { QUALITIES, EXTENSIONS, FONT_FAMILIES } from '@/constants'
 import type { ChordQuality } from '@/types'
 
 const uiInputClass = "w-full px-2 py-1.5 text-xs rounded-md border transition-all"
@@ -69,28 +69,68 @@ export function RightSidebar() {
           </h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
-          {/* Title & Subtitle */}
-          <div className="space-y-3">
-            <div>
-              <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Title</label>
+          {/* Title */}
+          <div className="space-y-2">
+            <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Title</label>
+            <input
+              type="text"
+              value={document.title.text}
+              onChange={(e) => updateTitle({ text: e.target.value })}
+              placeholder="Enter title..."
+              className={uiInputClass}
+              style={inputStyle}
+            />
+            <div className="flex gap-2">
+              <select
+                value={document.title.fontFamily}
+                onChange={(e) => updateTitle({ fontFamily: e.target.value })}
+                className="flex-1 text-[10px] px-1.5 py-1 rounded-md border"
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'var(--border-ui)', color: 'var(--text-ui)' }}
+              >
+                {FONT_FAMILIES.map((f) => (
+                  <option key={f} value={f} style={{ background: 'var(--bg-sidebar)' }}>{f}</option>
+                ))}
+              </select>
               <input
-                type="text"
-                value={document.title.text}
-                onChange={(e) => updateTitle({ text: e.target.value })}
-                placeholder="Enter title..."
-                className={uiInputClass}
-                style={inputStyle}
+                type="number"
+                value={document.title.fontSize}
+                onChange={(e) => updateTitle({ fontSize: Math.max(8, Math.min(72, Number(e.target.value) || 12)) })}
+                className="w-14 text-[10px] px-1.5 py-1 rounded-md border text-center"
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'var(--border-ui)', color: 'var(--text-ui)' }}
+                min={8} max={72}
               />
             </div>
-            <div>
-              <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Subtitle</label>
+          </div>
+
+          {/* Subtitle */}
+          <div className="space-y-2">
+            <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Subtitle</label>
+            <input
+              type="text"
+              value={document.subtitle.text}
+              onChange={(e) => updateSubtitle({ text: e.target.value })}
+              placeholder="Enter subtitle..."
+              className={uiInputClass}
+              style={inputStyle}
+            />
+            <div className="flex gap-2">
+              <select
+                value={document.subtitle.fontFamily}
+                onChange={(e) => updateSubtitle({ fontFamily: e.target.value })}
+                className="flex-1 text-[10px] px-1.5 py-1 rounded-md border"
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'var(--border-ui)', color: 'var(--text-ui)' }}
+              >
+                {FONT_FAMILIES.map((f) => (
+                  <option key={f} value={f} style={{ background: 'var(--bg-sidebar)' }}>{f}</option>
+                ))}
+              </select>
               <input
-                type="text"
-                value={document.subtitle.text}
-                onChange={(e) => updateSubtitle({ text: e.target.value })}
-                placeholder="Enter subtitle..."
-                className={uiInputClass}
-                style={inputStyle}
+                type="number"
+                value={document.subtitle.fontSize}
+                onChange={(e) => updateSubtitle({ fontSize: Math.max(8, Math.min(72, Number(e.target.value) || 12)) })}
+                className="w-14 text-[10px] px-1.5 py-1 rounded-md border text-center"
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'var(--border-ui)', color: 'var(--text-ui)' }}
+                min={8} max={72}
               />
             </div>
           </div>
