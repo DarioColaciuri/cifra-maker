@@ -14,7 +14,7 @@ function StaffLines() {
         <div
           key={i}
           style={{
-            borderTop: '1px solid rgba(0,0,0,0.16)',
+            borderTop: '1px solid rgba(0,0,0,0.28)',
             marginTop: i === 0 ? 0 : 7,
             height: i === 4 ? 'auto' : 0,
           }}
@@ -30,7 +30,7 @@ function MeasureDivider() {
   return (
     <div
       className="flex-shrink-0"
-      style={{ width: 1, height: STAFF_HEIGHT, background: 'rgba(0,0,0,0.22)' }}
+      style={{ width: 1, height: STAFF_HEIGHT, background: 'rgba(0,0,0,0.32)' }}
     />
   )
 }

@@ -21,24 +21,22 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
       windowWidth: page.offsetWidth,
       windowHeight: page.offsetHeight,
       onclone: (clonedDoc) => {
-        // Set inline on html and body directly (bypasses CSS cascade issues)
-        clonedDoc.documentElement.setAttribute('style',
-          'background:#ffffff!important;color:#000!important;margin:0;padding:0'
-        )
-        clonedDoc.body.setAttribute('style',
-          'background:#ffffff!important;color:#000!important;margin:0;padding:0'
-        )
+        // Force clean rendering without stripping layout styles
+        clonedDoc.documentElement.style.background = '#ffffff'
+        clonedDoc.documentElement.style.color = '#000000'
+        clonedDoc.body.style.background = '#ffffff'
+        clonedDoc.body.style.color = '#000000'
+        clonedDoc.body.style.margin = '0'
+        clonedDoc.body.style.padding = '0'
 
-        // Also force all elements to have black color via a style tag
+        // Add style override at end of head (highest cascade priority)
         const override = clonedDoc.createElement('style')
         override.textContent = `
-          html,body,#root{background:#ffffff!important;color:#000000!important}
-          body::before,body::after{display:none!important}
-          *.text-gray-500,*[class*=text-gray]{color:#000!important}
+          html,body,#root{background:#ffffff!important;color:#000000!important;margin:0;padding:0;height:auto}
+          body::before,body::after,#root::before,#root::after{display:none!important;content:none!important}
         `
         clonedDoc.head.appendChild(override)
 
-        // Hide UI in clone too
         clonedDoc.querySelectorAll('[data-export-hide]').forEach((el) => {
           (el as HTMLElement).style.display = 'none'
         })
