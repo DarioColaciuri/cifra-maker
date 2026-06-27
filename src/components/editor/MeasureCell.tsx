@@ -16,8 +16,8 @@ interface Props {
 }
 
 export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
-  const { removeMeasure, updateMeasure } = useDocumentStore()
-  const { symbolToPlace, setSymbolToPlace, setToolMode } = useUIStore()
+  const { removeMeasure, addChord, updateMeasure } = useDocumentStore()
+  const { symbolToPlace, setSymbolToPlace, setToolMode, dragOverMeasureId } = useUIStore()
 
   const droppableId = `${sectionId}--${systemId}--${measure.id}`
 
@@ -83,9 +83,10 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
     <div
       ref={setNodeRef}
       className="relative flex-1 cursor-pointer group transition-colors rounded-sm"
-      style={isOver ? {
+      style={(isOver || dragOverMeasureId === measure.id) ? {
         background: 'rgba(226, 168, 62, 0.12)',
         boxShadow: 'inset 0 0 0 2px var(--accent), 0 0 12px var(--accent-glow)',
+        transition: 'all 0.15s ease',
       } : undefined}
       onClick={handleClick}
     >

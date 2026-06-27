@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay, closestCenter } from '@dnd-kit/core'
-import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core'
+import type { DragStartEvent, DragEndEvent, DragOverEvent } from '@dnd-kit/core'
 import { AppShell } from '@/components/layout/AppShell'
 import { A4Page } from '@/components/layout/A4Page'
 import { Sidebar } from '@/components/sidebar/Sidebar'
@@ -61,7 +61,15 @@ export default function App() {
     else if (data?.type === 'symbol' && data?.symbolId) setActiveSymbol(data.symbolId)
   }
 
+  const handleDragOver = (event: DragOverEvent) => {
+    const overData = event.over?.data.current as DragData | undefined
+    if (overData?.measureId) {
+      useUIStore.getState().setDragOverMeasure(overData.measureId)
+    }
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
+    useUIStore.getState().setDragOverMeasure(null)
     setActiveChord(null)
     setActiveSymbol(null)
     const { active, over } = event
@@ -152,9 +160,9 @@ export default function App() {
       }
     }
 
-    // CASE 3: Symbol dropped on a measure (from sidebar)
+    // CASE 3: Symbol dropped on a measure or chord (from sidebar)
     if (activeData.type === 'symbol' && activeData.symbolId) {
-      if (overData?.type === 'measure') {
+      if (overData?.type === 'measure' || overData?.type === 'chord') {
         const symbolId = activeData.symbolId
         const doc = useDocumentStore.getState().document
         const section = doc.sections.find((s) => s.id === overData.sectionId!)
@@ -188,7 +196,7 @@ export default function App() {
 
     // CASE 4: Placed symbol dragged to another measure (move symbol)
     if (activeData.type === 'placed-symbol' && activeData.symbolId) {
-      if (overData?.type === 'measure') {
+      if (overData?.type === 'measure' || overData?.type === 'chord') {
         const symbolId = activeData.symbolId
         const fromSectionId = activeData.sectionId as string
         const fromSystemId = activeData.systemId as string
@@ -212,7 +220,7 @@ export default function App() {
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
       <AppShell>
         <Sidebar />
         <A4Page>
