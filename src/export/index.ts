@@ -62,12 +62,26 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
           html,body,#root{background:#ffffff!important;color:#000000!important;margin:0;padding:0;height:auto}
           body::before,body::after,#root::before,#root::after{display:none!important;content:none!important}
           *,*::before,*::after{animation:none!important;transition:none!important;opacity:1!important}
-          /* Fix html2canvas baseline offset for text inside containers */
-          [data-export-nudge]{transform:translateY(-6px)!important;display:inline-block}
-          [data-export-nudge-sm]{transform:translateY(-3px)!important;display:inline-block}
         `
         clonedDoc.head.appendChild(override)
-        clonedDoc.head.appendChild(override)
+
+        // Apply proportional baseline nudge based on fontSize
+        clonedDoc.querySelectorAll('[data-export-nudge]').forEach((el) => {
+          const htmlEl = el as HTMLElement
+          const cs = getComputedStyle(htmlEl)
+          const fs = parseFloat(cs.fontSize) || 15
+          const offset = Math.round(fs * 0.4)
+          htmlEl.style.display = 'inline-block'
+          htmlEl.style.transform = `translateY(-${offset}px)`
+        })
+        clonedDoc.querySelectorAll('[data-export-nudge-sm]').forEach((el) => {
+          const htmlEl = el as HTMLElement
+          const cs = getComputedStyle(htmlEl)
+          const fs = parseFloat(cs.fontSize) || 12
+          const offset = Math.round(fs * 0.25)
+          htmlEl.style.display = 'inline-block'
+          htmlEl.style.transform = `translateY(-${offset}px)`
+        })
 
         clonedDoc.querySelectorAll('[data-export-hide]').forEach((el) => {
           (el as HTMLElement).style.display = 'none'
