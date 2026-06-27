@@ -37,6 +37,7 @@ interface DragData {
   systemId?: string
   measureId?: string
   chordIndex?: number
+  symbolId?: string
 }
 
 export default function App() {
@@ -46,6 +47,7 @@ export default function App() {
   const { chordBuilderOpen } = useUIStore()
   const { addChord, moveChord, reorderChords } = useDocumentStore()
   const [activeChord, setActiveChord] = useState<Chord | null>(null)
+  const [activeSymbol, setActiveSymbol] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -56,10 +58,12 @@ export default function App() {
   const handleDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current as DragData | undefined
     if (data?.chord) setActiveChord(data.chord)
+    else if (data?.type === 'symbol' && data?.symbolId) setActiveSymbol(data.symbolId)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveChord(null)
+    setActiveSymbol(null)
     const { active, over } = event
     if (!over) return
 
@@ -147,6 +151,40 @@ export default function App() {
         return
       }
     }
+
+    // CASE 3: Symbol dropped on a measure
+    if (activeData.type === 'symbol' && activeData.symbolId) {
+      if (overData?.type === 'measure') {
+        const symbolId = activeData.symbolId
+        const doc = useDocumentStore.getState().document
+        const section = doc.sections.find((s) => s.id === overData.sectionId!)
+        if (!section) return
+        const system = section.systems.find((sys) => sys.id === overData.systemId!)
+        if (!system) return
+        const measure = system.measures.find((m) => m.id === overData.measureId!)
+        if (!measure) return
+
+        const updates: Record<string, boolean | number | string | null> = {}
+        switch (symbolId) {
+          case 'repeatStart': updates.repeatStart = !measure.repeatStart; break
+          case 'repeatEnd': updates.repeatEnd = !measure.repeatEnd; break
+          case 'doubleBarline': updates.doubleBarline = !measure.doubleBarline; break
+          case 'fermata': updates.fermata = !measure.fermata; break
+          case 'fine': updates.fine = !measure.fine; break
+          case 'dcAlFine': updates.dcAlFine = !measure.dcAlFine; break
+          case 'dsAlCoda': updates.dsAlCoda = !measure.dsAlCoda; break
+          case 'coda': updates.coda = !measure.coda; break
+          case 'segno': updates.segno = !measure.segno; break
+          case 'firstEnding': updates.firstEnding = !measure.firstEnding; break
+          case 'secondEnding': updates.secondEnding = !measure.secondEnding; break
+        }
+        if (Object.keys(updates).length > 0) {
+          const store = useDocumentStore.getState()
+          store.updateMeasure(overData.sectionId!, overData.systemId!, overData.measureId!, updates)
+        }
+      }
+      return
+    }
   }
 
   return (
@@ -161,6 +199,22 @@ export default function App() {
       {chordBuilderOpen && <ChordBuilderModal />}
       <DragOverlay dropAnimation={null}>
         {activeChord ? <DragPreview chord={activeChord} /> : null}
+        {activeSymbol ? (
+          <div className="px-3 py-1.5 rounded-lg text-lg"
+            style={{
+              background: 'var(--bg-sidebar)',
+              color: 'var(--accent)',
+              border: '2px solid var(--accent)',
+              boxShadow: '0 0 20px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.4)',
+            }}
+          >
+            {activeSymbol === 'repeatStart' ? '𝄆' : activeSymbol === 'repeatEnd' ? '𝄇' :
+             activeSymbol === 'doubleBarline' ? '𝄁' : activeSymbol === 'fermata' ? '𝄐' :
+             activeSymbol === 'fine' ? '𝄂' : activeSymbol === 'dcAlFine' ? 'D.C. al Fine' :
+             activeSymbol === 'dsAlCoda' ? 'D.S. al Coda' : activeSymbol === 'coda' ? '𝄌' :
+             activeSymbol === 'segno' ? '𝄉' : activeSymbol === 'firstEnding' ? '1.' : '2.'}
+          </div>
+        ) : null}
       </DragOverlay>
     </DndContext>
   )

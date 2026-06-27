@@ -170,7 +170,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
 
       {/* Chords — sortable within the measure */}
       <SortableContext items={chordIds} strategy={rectSortingStrategy}>
-        <div className="absolute inset-0 flex items-center justify-evenly px-1 z-10">
+        <div className="absolute inset-0 flex items-center justify-evenly px-1 z-10" style={{ pointerEvents: 'none' }}>
           {measure.chords.map((chord) => (
               <ChordSlot
                 key={chord.id}

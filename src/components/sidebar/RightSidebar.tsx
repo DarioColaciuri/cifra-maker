@@ -121,8 +121,10 @@ export function RightSidebar() {
                   style={active ? { ...btnActive } : { ...btnBase }}
                   onMouseEnter={(e) => { if (!active) Object.assign(e.currentTarget.style, btnHover) }}
                   onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = btnBase.background }}
+                  title={s === 'symbols' ? 'Jazz notation: Δ for maj7, ♭ for flat, ♯ for sharp, ø for m7b5' : 'Standard notation: maj7, b5, #5, m7b5'}
                 >
-                  {s === 'symbols' ? 'Δ ♭ ♯' : 'maj7 b5'}
+                  <div className="text-[10px] font-semibold">{s === 'symbols' ? 'Jazz Symbols' : 'Standard Text'}</div>
+                  <div style={{ fontSize: 8, opacity: 0.6 }}>{s === 'symbols' ? 'Δ ♭ ♯ ø' : 'maj7 b5 m7b5'}</div>
                 </button>
               )
             })}
