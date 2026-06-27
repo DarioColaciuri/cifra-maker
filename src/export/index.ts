@@ -64,6 +64,7 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
           *,*::before,*::after{animation:none!important;transition:none!important;opacity:1!important}
           /* Fix html2canvas baseline offset for text inside containers */
           [data-export-nudge]{transform:translateY(-6px)!important;display:inline-block}
+          [data-export-nudge-sm]{transform:translateY(-3px)!important;display:inline-block}
         `
         clonedDoc.head.appendChild(override)
         clonedDoc.head.appendChild(override)

@@ -74,7 +74,7 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
             lineHeight: 1,
           }}
         >
-          <span data-export-nudge>{section.label}</span>
+          <span data-export-nudge-sm>{section.label}</span>
         </div>
 
         <div data-export-hide className="flex items-center gap-0.5 ml-auto opacity-0 group-hover/section:opacity-100 transition-opacity">
