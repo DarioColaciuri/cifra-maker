@@ -5,54 +5,62 @@ function oklchToRgb(oklchStr: string): string | null {
   try {
     const el = document.createElement('div')
     el.style.color = oklchStr
+    el.style.display = 'none'
     document.body.appendChild(el)
     const computed = getComputedStyle(el).color
     document.body.removeChild(el)
-    if (computed && computed.startsWith('rgb')) return computed
+    if (computed && /^rgb/.test(computed)) return computed
     return null
   } catch {
     return null
   }
 }
 
-function fixOklchColors(clone: HTMLElement): void {
-  const allElements = clone.querySelectorAll('*')
+interface StyleRestore {
+  el: HTMLStyleElement
+  original: string
+}
+
+function fixAllOklch(): StyleRestore[] {
+  const restores: StyleRestore[] = []
   const cache = new Map<string, string>()
 
-  // Fix stylesheets in the clone that contain oklch
-  const styleTags = clone.querySelectorAll('style')
-  styleTags.forEach((styleTag) => {
-    let css = styleTag.textContent || ''
-    const oklchMatches = css.matchAll(/oklch\([^)]+\)/g)
-    for (const match of oklchMatches) {
-      const oklchVal = match[0]
-      if (!cache.has(oklchVal)) {
-        const rgb = oklchToRgb(oklchVal)
-        if (rgb) cache.set(oklchVal, rgb)
+  // Preload cache: find all unique oklch values in all style tags
+  const allStyleTags = document.querySelectorAll('style')
+  allStyleTags.forEach((tag) => {
+    const css = tag.textContent || ''
+    const matches = css.matchAll(/oklch\([^)]+\)/g)
+    for (const match of matches) {
+      const val = match[0]
+      if (!cache.has(val)) {
+        const rgb = oklchToRgb(val)
+        if (rgb) cache.set(val, rgb)
       }
-      const rgb = cache.get(oklchVal)
-      if (rgb) css = css.replaceAll(oklchVal, rgb)
     }
-    styleTag.textContent = css
   })
 
-  // Fix inline styles
-  allElements.forEach((el) => {
-    const htmlEl = el as HTMLElement
-    const style = htmlEl.getAttribute('style')
-    if (!style || !style.includes('oklch')) return
-    let newStyle = style
-    const oklchMatches = style.matchAll(/oklch\([^)]+\)/g)
-    for (const match of oklchMatches) {
-      const oklchVal = match[0]
-      if (!cache.has(oklchVal)) {
-        const rgb = oklchToRgb(oklchVal)
-        if (rgb) cache.set(oklchVal, rgb)
+  // Fix all style tags on the page (not clone)
+  allStyleTags.forEach((tag) => {
+    let css = tag.textContent || ''
+    let modified = false
+    for (const [oklch, rgb] of cache) {
+      if (css.includes(oklch)) {
+        css = css.replaceAll(oklch, rgb)
+        modified = true
       }
-      const rgb = cache.get(oklchVal)
-      if (rgb) newStyle = newStyle.replaceAll(oklchVal, rgb)
     }
-    if (newStyle !== style) htmlEl.setAttribute('style', newStyle)
+    if (modified) {
+      restores.push({ el: tag as HTMLStyleElement, original: tag.textContent || '' })
+      tag.textContent = css
+    }
+  })
+
+  return restores
+}
+
+function restoreAllOklch(restores: StyleRestore[]): void {
+  restores.forEach(({ el, original }) => {
+    el.textContent = original
   })
 }
 
@@ -63,20 +71,22 @@ export async function exportPNG(scale: number = 1): Promise<void> {
     return
   }
 
-  const canvas = await html2canvas(page, {
-    scale,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    onclone: (clonedDoc) => {
-      const clonedPage = clonedDoc.querySelector('[data-a4-page]') as HTMLElement
-      if (clonedPage) fixOklchColors(clonedPage)
-    },
-  })
+  const restores = fixAllOklch()
 
-  const link = document.createElement('a')
-  link.download = `chord-chart${scale > 1 ? '-hd' : ''}.png`
-  link.href = canvas.toDataURL('image/png')
-  link.click()
+  try {
+    const canvas = await html2canvas(page, {
+      scale,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+    })
+
+    const link = document.createElement('a')
+    link.download = `chord-chart${scale > 1 ? '-hd' : ''}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  } finally {
+    restoreAllOklch(restores)
+  }
 }
 
 export async function exportPDF(): Promise<void> {
@@ -86,26 +96,28 @@ export async function exportPDF(): Promise<void> {
     return
   }
 
-  const canvas = await html2canvas(page, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    onclone: (clonedDoc) => {
-      const clonedPage = clonedDoc.querySelector('[data-a4-page]') as HTMLElement
-      if (clonedPage) fixOklchColors(clonedPage)
-    },
-  })
+  const restores = fixAllOklch()
 
-  const imgData = canvas.toDataURL('image/png')
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-  })
+  try {
+    const canvas = await html2canvas(page, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+    })
 
-  const pdfWidth = pdf.internal.pageSize.getWidth()
-  const pdfHeight = pdf.internal.pageSize.getHeight()
+    const imgData = canvas.toDataURL('image/png')
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    })
 
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-  pdf.save('chord-chart.pdf')
+    const pdfWidth = pdf.internal.pageSize.getWidth()
+    const pdfHeight = pdf.internal.pageSize.getHeight()
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+    pdf.save('chord-chart.pdf')
+  } finally {
+    restoreAllOklch(restores)
+  }
 }
