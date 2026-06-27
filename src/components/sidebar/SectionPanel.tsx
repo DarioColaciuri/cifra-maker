@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useDocumentStore } from '@/stores/documentStore'
 import { SECTION_PRESETS } from '@/constants'
 
@@ -19,11 +20,67 @@ const inputStyle = {
   border: 'none',
 }
 
+function PresetDropdown({ buttonRef, onSelect, onClose }: {
+  buttonRef: React.RefObject<HTMLButtonElement | null>
+  onSelect: (preset: string) => void
+  onClose: () => void
+}) {
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 })
+
+  useEffect(() => {
+    const updatePos = () => {
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect()
+        setPos({ top: rect.bottom + 4, left: rect.left, width: rect.width })
+      }
+    }
+    updatePos()
+    window.addEventListener('scroll', updatePos, true)
+    window.addEventListener('resize', updatePos)
+    return () => {
+      window.removeEventListener('scroll', updatePos, true)
+      window.removeEventListener('resize', updatePos)
+    }
+  }, [buttonRef])
+
+  return createPortal(
+    <>
+      <div className="fixed inset-0 z-[998]" onClick={onClose} />
+      <div
+        className="fixed rounded-lg shadow-xl z-[999] py-1 overflow-hidden animate-fade-up"
+        style={{
+          top: pos.top,
+          left: pos.left,
+          width: pos.width,
+          background: 'var(--bg-sidebar)',
+          border: '1px solid var(--border-ui)',
+          boxShadow: 'var(--shadow-card)',
+        }}
+      >
+        {SECTION_PRESETS.map((preset) => (
+          <button
+            key={preset}
+            onClick={() => onSelect(preset)}
+            className="w-full text-left px-3 py-2 text-[11px] transition-colors"
+            style={{ color: 'var(--text-ui)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-soft)'; e.currentTarget.style.color = 'var(--accent)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-ui)' }}
+          >
+            {preset}
+          </button>
+        ))}
+      </div>
+    </>,
+    document.body
+  )
+}
+
 export function SectionPanel() {
   const sections = useDocumentStore((s) => s.document.sections)
   const { addSection, removeSection, updateSectionLabel, updateSectionLyrics } = useDocumentStore()
   const [showPresets, setShowPresets] = useState(false)
   const [expandedLyrics, setExpandedLyrics] = useState<Set<string>>(new Set())
+  const addBtnRef = useRef<HTMLButtonElement>(null)
 
   return (
     <div className="space-y-1.5 py-1">
@@ -75,36 +132,24 @@ export function SectionPanel() {
         </div>
       ))}
 
-      <div className="relative">
-        <button
-          onClick={() => setShowPresets(!showPresets)}
-          className="w-full text-[10px] py-1.5 rounded-md border border-dashed transition-all duration-200 hover:-translate-y-0.5"
-          style={btnStyle}
-          onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnHover)}
-          onMouseLeave={(e) => Object.assign(e.currentTarget.style, btnStyle)}
-        >
-          + Add Section
-        </button>
-        {showPresets && (
-          <div
-            className="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-xl z-[999] py-1 overflow-hidden animate-fade-up"
-            style={{ background: 'var(--bg-sidebar)', border: '1px solid var(--border-ui)', boxShadow: 'var(--shadow-card)' }}
-          >
-            {SECTION_PRESETS.map((preset) => (
-              <button
-                key={preset}
-                onClick={() => { addSection(preset); setShowPresets(false) }}
-                className="w-full text-left px-3 py-2 text-[11px] transition-colors"
-                style={{ color: 'var(--text-ui)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-soft)'; e.currentTarget.style.color = 'var(--accent)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-ui)' }}
-              >
-                {preset}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      <button
+        ref={addBtnRef}
+        onClick={() => setShowPresets(!showPresets)}
+        className="w-full text-[10px] py-1.5 rounded-md border border-dashed transition-all duration-200 hover:-translate-y-0.5"
+        style={btnStyle}
+        onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnHover)}
+        onMouseLeave={(e) => Object.assign(e.currentTarget.style, btnStyle)}
+      >
+        + Add Section
+      </button>
+
+      {showPresets && (
+        <PresetDropdown
+          buttonRef={addBtnRef}
+          onSelect={(preset) => { addSection(preset); setShowPresets(false) }}
+          onClose={() => setShowPresets(false)}
+        />
+      )}
     </div>
   )
 }
