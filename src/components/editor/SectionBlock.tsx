@@ -38,7 +38,7 @@ export function SectionBlock({ section, dragHandleListeners, isDragging }: Props
   return (
     <div
       onClick={handleSectionClick}
-      className="relative mb-4 rounded-lg border-2 transition-all duration-300 cursor-pointer group/section"
+      className="relative rounded-lg border-2 transition-all duration-300 cursor-pointer group/section"
       style={{
         borderColor: isSelected ? 'var(--accent)' : isDragging ? 'var(--accent)' : 'transparent',
         background: isSelected ? 'rgba(226, 168, 62, 0.04)' : isDragging ? 'rgba(226, 168, 62, 0.08)' : 'transparent',

@@ -13,6 +13,9 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable
+
       const ctrl = e.ctrlKey || e.metaKey
 
       // Ctrl+Z -> Undo
@@ -31,6 +34,7 @@ export function useKeyboardShortcuts() {
 
       // Escape
       if (e.key === 'Escape') {
+        if (isInput) return
         e.preventDefault()
         if (chordBuilderOpen) {
           closeChordBuilder()
@@ -39,8 +43,9 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      // Delete / Backspace
+      // Delete / Backspace — only when not focused on an input
       if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (isInput) return
         if (chordBuilderOpen) return
         e.preventDefault()
         for (const id of selectedSectionIds) {
