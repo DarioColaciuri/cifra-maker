@@ -62,9 +62,8 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
           html,body,#root{background:#ffffff!important;color:#000000!important;margin:0;padding:0;height:auto}
           body::before,body::after,#root::before,#root::after{display:none!important;content:none!important}
           *,*::before,*::after{animation:none!important;transition:none!important;opacity:1!important}
-          /* Fix html2canvas baseline offset: nudge chords and section labels up */
-          [data-a4-page] .rounded-full { transform: translateY(-2px) !important; }
-          [data-a4-page] .leading-none.inline-block { transform: translateY(-2px) !important; }
+          /* Fix html2canvas baseline offset for text inside containers */
+          [data-export-nudge]{transform:translateY(-6px)!important;display:inline-block}
         `
         clonedDoc.head.appendChild(override)
         clonedDoc.head.appendChild(override)
