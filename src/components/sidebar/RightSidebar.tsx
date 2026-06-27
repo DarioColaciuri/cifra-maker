@@ -59,21 +59,57 @@ export function RightSidebar() {
     borderColor: 'var(--accent)',
   }
 
+  // No selection: show page-level settings
   if (!hasSelection) {
     return (
       <div className="w-[260px] h-full flex flex-col flex-shrink-0 select-none" style={sidebarStyle}>
         <div className="px-4 py-4 flex-shrink-0" style={headerBorder}>
           <h2 className="text-xs font-semibold tracking-wide" style={{ color: '#d0d0e0' }}>
-            Properties
+            Page Settings
           </h2>
-          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-ui-dim)' }}>
-            select an item to edit
-          </p>
         </div>
-        <div className="flex-1 flex items-center justify-center p-4">
-          <p className="text-[11px] text-center leading-relaxed" style={{ color: 'var(--text-ui-dim)' }}>
-            click a section or chord<br />on the page to edit
-          </p>
+        <div className="flex-1 overflow-y-auto p-4 space-y-5">
+          <div>
+            <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Notation</label>
+            <div className="flex gap-1.5">
+              {(['symbols', 'text'] as const).map((s) => {
+                const active = document.notationStyle === s
+                return (
+                  <button
+                    key={s}
+                    onClick={() => setNotationStyle(s)}
+                    className="flex-1 text-[10px] py-1.5 rounded-md border transition-all duration-200 hover:-translate-y-0.5"
+                    style={active ? { ...btnActive } : { ...btnBase }}
+                    onMouseEnter={(e) => { if (!active) Object.assign(e.currentTarget.style, btnHover) }}
+                    onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = btnBase.background }}
+                    title={s === 'symbols' ? 'Jazz notation' : 'Standard notation'}
+                  >
+                    <div className="text-[10px] font-semibold">{s === 'symbols' ? 'Jazz Symbols' : 'Standard Text'}</div>
+                    <div style={{ fontSize: 8, opacity: 0.6 }}>{s === 'symbols' ? 'Δ ♭ ♯ ø' : 'maj7 b5 m7b5'}</div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>Top Margin</span>
+                  <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>{document.pageTopMargin}px</span>
+                </div>
+                <input type="range" min={20} max={150} step={4} value={document.pageTopMargin} onChange={(e) => updatePageTopMargin(Number(e.target.value))} className="w-full" />
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>Title → Section</span>
+                  <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>{document.titleSectionGap}px</span>
+                </div>
+                <input type="range" min={8} max={120} step={4} value={document.titleSectionGap} onChange={(e) => updateTitleSectionGap(Number(e.target.value))} className="w-full" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -107,67 +143,6 @@ export function RightSidebar() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
-        {/* Notation Style */}
-        <div>
-          <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Notation</label>
-          <div className="flex gap-1.5">
-            {(['symbols', 'text'] as const).map((s) => {
-              const active = document.notationStyle === s
-              return (
-                <button
-                  key={s}
-                  onClick={() => setNotationStyle(s)}
-                  className="flex-1 text-[10px] py-1.5 rounded-md border transition-all duration-200 hover:-translate-y-0.5"
-                  style={active ? { ...btnActive } : { ...btnBase }}
-                  onMouseEnter={(e) => { if (!active) Object.assign(e.currentTarget.style, btnHover) }}
-                  onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = btnBase.background }}
-                  title={s === 'symbols' ? 'Jazz notation: Δ for maj7, ♭ for flat, ♯ for sharp, ø for m7b5' : 'Standard notation: maj7, b5, #5, m7b5'}
-                >
-                  <div className="text-[10px] font-semibold">{s === 'symbols' ? 'Jazz Symbols' : 'Standard Text'}</div>
-                  <div style={{ fontSize: 8, opacity: 0.6 }}>{s === 'symbols' ? 'Δ ♭ ♯ ø' : 'maj7 b5 m7b5'}</div>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Page layout settings (always visible) */}
-        <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
-          <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Page Settings</label>
-          <div className="space-y-3 mt-2">
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>Top Margin</span>
-                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>{document.pageTopMargin}px</span>
-              </div>
-              <input
-                type="range"
-                min={20}
-                max={150}
-                step={4}
-                value={document.pageTopMargin}
-                onChange={(e) => updatePageTopMargin(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>Title → Section</span>
-                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>{document.titleSectionGap}px</span>
-              </div>
-              <input
-                type="range"
-                min={8}
-                max={120}
-                step={4}
-                value={document.titleSectionGap}
-                onChange={(e) => updateTitleSectionGap(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* Section properties */}
         {selectedSection && (
           <>
