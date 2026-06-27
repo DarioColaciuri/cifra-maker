@@ -9,7 +9,7 @@ Thumbs.db
 # Agent / skills / AI config
 .agents/
 .opencode/
-~/.config/opencode/
+skills-lock.json
 *.skill.md
 SKILL.md
 LICENSE.txt
