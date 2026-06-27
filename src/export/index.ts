@@ -52,7 +52,10 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
           html,body,#root{background:#ffffff!important;color:#000000!important;margin:0;padding:0;height:auto}
           body::before,body::after,#root::before,#root::after{display:none!important;content:none!important}
           *,*::before,*::after{animation:none!important;transition:none!important;opacity:1!important}
+          /* Use system fonts with stable canvas metrics for export */
+          [data-a4-page],[data-a4-page] *{font-family:'Arial','Helvetica',sans-serif!important}
         `
+        clonedDoc.head.appendChild(override)
         clonedDoc.head.appendChild(override)
 
         clonedDoc.querySelectorAll('[data-export-hide]').forEach((el) => {
