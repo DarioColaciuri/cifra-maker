@@ -16,22 +16,19 @@ function oklchToRgb(oklchStr: string): string | null {
   }
 }
 
-interface StyleRestore {
-  el: HTMLStyleElement
-  original: string
-}
+type RestoreFn = () => void
 
-function fixAllOklch(): StyleRestore[] {
-  const restores: StyleRestore[] = []
+function patchPage(): RestoreFn {
   const cache = new Map<string, string>()
+  const restorers: RestoreFn[] = []
 
-  // Preload cache: find all unique oklch values in all style tags
-  const allStyleTags = document.querySelectorAll('style')
-  allStyleTags.forEach((tag) => {
-    const css = tag.textContent || ''
-    const matches = css.matchAll(/oklch\([^)]+\)/g)
-    for (const match of matches) {
-      const val = match[0]
+  // 1. Scan all <style> tags for oklch values
+  const styleTags = document.querySelectorAll('style')
+  styleTags.forEach((tag) => {
+    let css = tag.textContent || ''
+    const matches = css.matchAll(/oklch\([^)]*\)/g)
+    for (const m of matches) {
+      const val = m[0]
       if (!cache.has(val)) {
         const rgb = oklchToRgb(val)
         if (rgb) cache.set(val, rgb)
@@ -39,8 +36,26 @@ function fixAllOklch(): StyleRestore[] {
     }
   })
 
-  // Fix all style tags on the page (not clone)
-  allStyleTags.forEach((tag) => {
+  // 2. Also scan inline styles and SVG elements
+  const allEls = document.querySelectorAll('[style], svg *, svg')
+  allEls.forEach((el) => {
+    const htmlEl = el as HTMLElement
+    const style = htmlEl.getAttribute('style') || ''
+    if (!style.includes('oklch')) return
+    const matches = style.matchAll(/oklch\([^)]*\)/g)
+    for (const m of matches) {
+      const val = m[0]
+      if (!cache.has(val)) {
+        const rgb = oklchToRgb(val)
+        if (rgb) cache.set(val, rgb)
+      }
+    }
+  })
+
+  if (cache.size === 0) return () => {}
+
+  // 3. Replace oklch in all style tags
+  styleTags.forEach((tag) => {
     let css = tag.textContent || ''
     let modified = false
     for (const [oklch, rgb] of cache) {
@@ -50,18 +65,28 @@ function fixAllOklch(): StyleRestore[] {
       }
     }
     if (modified) {
-      restores.push({ el: tag as HTMLStyleElement, original: tag.textContent || '' })
+      const original = tag.textContent || ''
       tag.textContent = css
+      restorers.push(() => { tag.textContent = original })
     }
   })
 
-  return restores
-}
-
-function restoreAllOklch(restores: StyleRestore[]): void {
-  restores.forEach(({ el, original }) => {
-    el.textContent = original
+  // 4. Replace oklch in all inline style attributes
+  allEls.forEach((el) => {
+    const htmlEl = el as HTMLElement
+    const style = htmlEl.getAttribute('style') || ''
+    if (!style.includes('oklch')) return
+    let newStyle = style
+    for (const [oklch, rgb] of cache) {
+      newStyle = newStyle.replaceAll(oklch, rgb)
+    }
+    if (newStyle !== style) {
+      htmlEl.setAttribute('style', newStyle)
+      restorers.push(() => { htmlEl.setAttribute('style', style) })
+    }
   })
+
+  return () => restorers.forEach((r) => r())
 }
 
 export async function exportPNG(scale: number = 1): Promise<void> {
@@ -71,7 +96,7 @@ export async function exportPNG(scale: number = 1): Promise<void> {
     return
   }
 
-  const restores = fixAllOklch()
+  const restore = patchPage()
 
   try {
     const canvas = await html2canvas(page, {
@@ -85,7 +110,7 @@ export async function exportPNG(scale: number = 1): Promise<void> {
     link.href = canvas.toDataURL('image/png')
     link.click()
   } finally {
-    restoreAllOklch(restores)
+    restore()
   }
 }
 
@@ -96,7 +121,7 @@ export async function exportPDF(): Promise<void> {
     return
   }
 
-  const restores = fixAllOklch()
+  const restore = patchPage()
 
   try {
     const canvas = await html2canvas(page, {
@@ -118,6 +143,6 @@ export async function exportPDF(): Promise<void> {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
     pdf.save('chord-chart.pdf')
   } finally {
-    restoreAllOklch(restores)
+    restore()
   }
 }
