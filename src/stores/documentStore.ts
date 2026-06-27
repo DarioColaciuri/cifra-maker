@@ -22,13 +22,18 @@ interface DocumentState {
   updateTitle: (title: Partial<TextBlock>) => void
   updateSubtitle: (subtitle: Partial<TextBlock>) => void
   setNotationStyle: (style: CifraDocument['notationStyle']) => void
+  updatePageTopMargin: (margin: number) => void
+  updateTitleSectionGap: (gap: number) => void
 
   // Section actions
   addSection: (label?: string) => void
   removeSection: (sectionId: string) => void
   updateSectionLabel: (sectionId: string, label: string) => void
   updateSectionSpacing: (sectionId: string, spacing: number) => void
+  updateSectionGap: (sectionId: string, gap: number) => void
   moveSection: (sectionId: string, newOrder: number) => void
+  reorderSections: (fromIndex: number, toIndex: number) => void
+  duplicateSection: (sectionId: string) => void
   updateSectionLyrics: (sectionId: string, lyrics: string[]) => void
 
   // System actions
@@ -111,6 +116,20 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     get()._saveToHistory('Toggle notation style')
   },
 
+  updatePageTopMargin: (margin) => {
+    const prev = get().document
+    const next = produce(prev, (draft) => { draft.pageTopMargin = margin })
+    set({ document: next })
+    get()._saveToHistory('Update page top margin')
+  },
+
+  updateTitleSectionGap: (gap) => {
+    const prev = get().document
+    const next = produce(prev, (draft) => { draft.titleSectionGap = gap })
+    set({ document: next })
+    get()._saveToHistory('Update title-section gap')
+  },
+
   addSection: (label = 'Verse') => {
     const prev = get().document
     const next = produce(prev, (draft) => {
@@ -149,6 +168,51 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     })
     set({ document: next })
     get()._saveToHistory('Update system spacing')
+  },
+
+  updateSectionGap: (sectionId, gap) => {
+    const prev = get().document
+    const next = produce(prev, (draft) => {
+      const section = draft.sections.find((s) => s.id === sectionId)
+      if (section) section.sectionSpacing = gap
+    })
+    set({ document: next })
+    get()._saveToHistory('Update section gap')
+  },
+
+  reorderSections: (fromIndex, toIndex) => {
+    const prev = get().document
+    const next = produce(prev, (draft) => {
+      const [moved] = draft.sections.splice(fromIndex, 1)
+      draft.sections.splice(toIndex, 0, moved)
+      draft.sections.forEach((s, i) => { s.order = i })
+    })
+    set({ document: next })
+    get()._saveToHistory('Reorder sections')
+  },
+
+  duplicateSection: (sectionId) => {
+    const prev = get().document
+    const next = produce(prev, (draft) => {
+      const idx = draft.sections.findIndex((s) => s.id === sectionId)
+      if (idx === -1) return
+      const original = JSON.parse(JSON.stringify(draft.sections[idx]))
+      original.id = uuid()
+      original.label = original.label + ' (copy)'
+      original.order = draft.sections.length
+      // Regenerate all nested IDs
+      original.systems?.forEach((sys: System) => {
+        sys.id = uuid()
+        sys.measures?.forEach((m: Measure) => {
+          m.id = uuid()
+          m.chords?.forEach((c: Chord) => { c.id = uuid() })
+        })
+      })
+      draft.sections.splice(idx + 1, 0, original)
+      draft.sections.forEach((s, i) => { s.order = i })
+    })
+    set({ document: next })
+    get()._saveToHistory('Duplicate section')
   },
 
   moveSection: (sectionId, newOrder) => {

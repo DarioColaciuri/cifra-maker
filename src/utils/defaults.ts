@@ -22,6 +22,8 @@ export function createDefaultDocument(): CifraDocument {
     },
     sections: [],
     notationStyle: 'symbols',
+    pageTopMargin: 80,
+    titleSectionGap: 32,
   }
 }
 
@@ -30,6 +32,7 @@ export function createSection(label: string = 'Verse', order: number = 0): Secti
     id: uuid(),
     label,
     systemSpacing: 16,
+    sectionSpacing: 24,
     systems: [],
     order,
     lyrics: [],

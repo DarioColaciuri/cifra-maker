@@ -59,6 +59,7 @@ export interface Section {
   id: string
   label: string
   systemSpacing: number
+  sectionSpacing: number
   systems: System[]
   order: number
   lyrics: string[]
@@ -71,4 +72,6 @@ export interface CifraDocument {
   subtitle: TextBlock
   sections: Section[]
   notationStyle: NotationStyle
+  pageTopMargin: number
+  titleSectionGap: number
 }

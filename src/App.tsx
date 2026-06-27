@@ -228,6 +228,19 @@ export default function App() {
       }
       return
     }
+
+    // CASE 5: Section reorder
+    if (activeData.type === 'section') {
+      const doc = useDocumentStore.getState().document
+      const fromIdx = doc.sections.findIndex((s) => s.id === active.id)
+      if (overData?.type === 'section') {
+        const toIdx = doc.sections.findIndex((s) => s.id === over.id)
+        if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+          useDocumentStore.getState().reorderSections(fromIdx, toIdx)
+        }
+      }
+      return
+    }
   }
 
   return (

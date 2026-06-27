@@ -9,7 +9,7 @@ const uiLabelClass = "text-[10px] font-medium block mb-1 tracking-wide"
 
 export function RightSidebar() {
   const document = useDocumentStore((s) => s.document)
-  const { updateSectionSpacing, updateSectionLabel, setNotationStyle, updateChord } = useDocumentStore()
+  const { updateSectionSpacing, updateSectionLabel, setNotationStyle, updateChord, updateSectionGap, updatePageTopMargin, updateTitleSectionGap } = useDocumentStore()
   const { selectedSectionIds, selectedChordIds, selectedChordContext, clearSelection } = useUIStore()
 
   const selectedSection = selectedSectionIds[0]
@@ -131,10 +131,47 @@ export function RightSidebar() {
           </div>
         </div>
 
+        {/* Page layout settings (always visible) */}
+        <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
+          <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Page Settings</label>
+          <div className="space-y-3 mt-2">
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>Top Margin</span>
+                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>{document.pageTopMargin}px</span>
+              </div>
+              <input
+                type="range"
+                min={20}
+                max={150}
+                step={4}
+                value={document.pageTopMargin}
+                onChange={(e) => updatePageTopMargin(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>Title → Section</span>
+                <span className="text-[9px]" style={{ color: 'var(--text-ui-dim)' }}>{document.titleSectionGap}px</span>
+              </div>
+              <input
+                type="range"
+                min={8}
+                max={120}
+                step={4}
+                value={document.titleSectionGap}
+                onChange={(e) => updateTitleSectionGap(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Section properties */}
         {selectedSection && (
           <>
-            <div>
+            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
               <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Section Label</label>
               <input
                 type="text"
@@ -159,6 +196,24 @@ export function RightSidebar() {
                 step={1}
                 value={selectedSection.systemSpacing}
                 onChange={(e) => updateSectionSpacing(selectedSection.id, Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Gap before section</label>
+                <span className="text-[10px]" style={{ color: 'var(--text-ui-dim)' }}>
+                  {selectedSection.sectionSpacing}px
+                </span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={120}
+                step={4}
+                value={selectedSection.sectionSpacing}
+                onChange={(e) => updateSectionGap(selectedSection.id, Number(e.target.value))}
                 className="w-full"
               />
             </div>
