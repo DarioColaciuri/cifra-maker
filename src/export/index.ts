@@ -96,6 +96,13 @@ export async function exportPNG(scale: number = 1): Promise<void> {
     return
   }
 
+  // Wait for web fonts to load
+  await document.fonts.ready
+
+  // Remove box-shadow temporarily to avoid gray bars in export
+  const savedShadow = page.style.boxShadow
+  page.style.boxShadow = 'none'
+
   const restore = patchPage()
 
   try {
@@ -103,6 +110,8 @@ export async function exportPNG(scale: number = 1): Promise<void> {
       scale,
       useCORS: true,
       backgroundColor: '#ffffff',
+      windowWidth: page.offsetWidth,
+      windowHeight: page.offsetHeight,
     })
 
     const link = document.createElement('a')
@@ -110,6 +119,7 @@ export async function exportPNG(scale: number = 1): Promise<void> {
     link.href = canvas.toDataURL('image/png')
     link.click()
   } finally {
+    page.style.boxShadow = savedShadow
     restore()
   }
 }
@@ -121,6 +131,11 @@ export async function exportPDF(): Promise<void> {
     return
   }
 
+  await document.fonts.ready
+
+  const savedShadow = page.style.boxShadow
+  page.style.boxShadow = 'none'
+
   const restore = patchPage()
 
   try {
@@ -128,6 +143,8 @@ export async function exportPDF(): Promise<void> {
       scale: 2,
       useCORS: true,
       backgroundColor: '#ffffff',
+      windowWidth: page.offsetWidth,
+      windowHeight: page.offsetHeight,
     })
 
     const imgData = canvas.toDataURL('image/png')
@@ -143,6 +160,7 @@ export async function exportPDF(): Promise<void> {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
     pdf.save('chord-chart.pdf')
   } finally {
+    page.style.boxShadow = savedShadow
     restore()
   }
 }
