@@ -87,7 +87,7 @@ export function SectionPanel() {
         </button>
         {showPresets && (
           <div
-            className="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-xl z-30 py-1 overflow-hidden animate-fade-up"
+            className="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-xl z-[999] py-1 overflow-hidden animate-fade-up"
             style={{ background: 'var(--bg-sidebar)', border: '1px solid var(--border-ui)', boxShadow: 'var(--shadow-card)' }}
           >
             {SECTION_PRESETS.map((preset) => (
