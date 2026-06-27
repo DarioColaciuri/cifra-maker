@@ -70,17 +70,17 @@ async function captureExport(page: HTMLElement, scale: number): Promise<HTMLCanv
           const htmlEl = el as HTMLElement
           const cs = getComputedStyle(htmlEl)
           const fs = parseFloat(cs.fontSize) || 15
-          const offset = Math.round(fs * 0.4)
+          // Linear offset with extra boost for small text
+          const baseOffset = fs * 0.467
+          const smallBoost = fs < 13 ? 1 : 0
+          const offset = Math.round(baseOffset + smallBoost)
           htmlEl.style.display = 'inline-block'
           htmlEl.style.transform = `translateY(-${offset}px)`
         })
         clonedDoc.querySelectorAll('[data-export-nudge-sm]').forEach((el) => {
           const htmlEl = el as HTMLElement
-          const cs = getComputedStyle(htmlEl)
-          const fs = parseFloat(cs.fontSize) || 12
-          const offset = Math.round(fs * 0.25)
           htmlEl.style.display = 'inline-block'
-          htmlEl.style.transform = `translateY(-${offset}px)`
+          htmlEl.style.transform = 'translateY(-3px)'
         })
 
         clonedDoc.querySelectorAll('[data-export-hide]').forEach((el) => {
