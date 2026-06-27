@@ -1,0 +1,21 @@
+node_modules/
+dist/
+*.log
+.env
+.env.*
+.DS_Store
+Thumbs.db
+
+# Agent / skills / AI config
+.agents/
+.opencode/
+~/.config/opencode/
+*.skill.md
+SKILL.md
+LICENSE.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
