@@ -42,7 +42,7 @@ export function ChordRenderer({ chord, large = false }: Props) {
   const hasSuper = parts.qualitySuffix || parts.extensionText
 
   return (
-    <div className="inline-flex flex-col items-center leading-none">
+    <div className="inline-flex items-center leading-none">
       <div>
         {/* Root: bold, anchor at baseline */}
         <span className="font-bold text-gray-900 align-baseline" style={{ fontSize: rootSize }}>
@@ -56,14 +56,14 @@ export function ChordRenderer({ chord, large = false }: Props) {
             {parts.extensionText && chord.extensions.map(formatExtension).join('')}
           </span>
         )}
-      </div>
 
-      {/* Bass note below */}
-      {parts.bassText && (
-        <div className="text-gray-400 leading-none" style={{ fontSize: superSize }}>
-          {parts.bassText}
-        </div>
-      )}
+        {/* Bass note inline */}
+        {parts.bassText && (
+          <span className="font-bold text-gray-900 leading-none" style={{ fontSize: rootSize }}>
+            {parts.bassText}
+          </span>
+        )}
+      </div>
     </div>
   )
 }

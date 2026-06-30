@@ -207,7 +207,7 @@ export function RightSidebar() {
         )}
         {selectedChord && (
           <p className="text-[10px] mt-0.5 font-medium" style={{ color: 'var(--accent)' }}>
-            {selectedChord.root}{selectedChord.quality !== 'major' ? selectedChord.quality : ''}{selectedChord.extensions.join('')}
+            {selectedChord.root}{selectedChord.quality !== 'major' ? selectedChord.quality : ''}{selectedChord.extensions.join('')}{selectedChord.bass ? '/' + selectedChord.bass : ''}
           </p>
         )}
       </div>
@@ -389,6 +389,27 @@ export function RightSidebar() {
                     + Custom
                   </button>
                 )}
+              </div>
+            </div>
+
+            <div>
+              <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Bass Note</label>
+              <div className="flex flex-wrap gap-0.5">
+                {['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'].map((note) => {
+                  const active = selectedChord!.bass === note
+                  return (
+                    <button
+                      key={note}
+                      onClick={() => updateChord(selectedChordContext!.sectionId, selectedChordContext!.systemId, selectedChordContext!.measureId, selectedChord!.id, { bass: active ? null : note })}
+                      className="px-1 py-0.5 text-[8px] rounded-md border transition-all duration-200 hover:-translate-y-0.5"
+                      style={active ? { ...btnActive } : { ...btnBase }}
+                      onMouseEnter={(e) => { if (!active) Object.assign(e.currentTarget.style, btnHover) }}
+                      onMouseLeave={(e) => { if (!active) Object.assign(e.currentTarget.style, { background: btnBase.background, borderColor: btnBase.borderColor }) }}
+                    >
+                      {note}
+                    </button>
+                  )
+                })}
               </div>
             </div>
 

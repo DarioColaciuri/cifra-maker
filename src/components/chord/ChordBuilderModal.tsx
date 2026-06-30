@@ -130,6 +130,32 @@ export function ChordBuilderModal() {
               )
             }} />
           </div>
+
+          {/* Bass Note */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">
+              Bass Note: {bass ? <span className="text-purple-600 font-bold">{bass}</span> : <span className="text-gray-400 font-normal">None</span>}
+            </label>
+            <PianoKeyboard
+              selectedRoot={bass || ''}
+              onSelectRoot={(note) => setBass(note)}
+              sharpPreference={sharpPreference}
+              onTogglePreference={(key) => {
+                setSharpPreference((prev) => ({
+                  ...prev,
+                  [key]: prev[key] === 'sharp' ? 'flat' : 'sharp',
+                }))
+              }}
+            />
+            {bass && (
+              <button
+                onClick={() => setBass(null)}
+                className="mt-2 text-xs text-gray-400 hover:text-gray-600 underline transition-colors"
+              >
+                Clear bass note
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Footer */}

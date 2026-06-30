@@ -27,6 +27,7 @@ export function ChordPanel() {
   const [root, setRoot] = useState('C')
   const [quality, setQuality] = useState<ChordQuality>('major')
   const [extensions, setExtensions] = useState<string[]>([])
+  const [bass, setBass] = useState<string | null>(null)
   const [showCustomExt, setShowCustomExt] = useState(false)
   const [customExtValue, setCustomExtValue] = useState('')
   const [sharpPref, setSharpPref] = useState<Record<string, 'sharp' | 'flat'>>({
@@ -38,12 +39,12 @@ export function ChordPanel() {
     root,
     quality,
     extensions,
-    bass: null,
-  }), [root, quality, extensions])
+    bass,
+  }), [root, quality, extensions, bass])
 
   useEffect(() => {
     previewChord(chord)
-  }, [root, quality, extensions])
+  }, [root, quality, extensions, bass])
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: 'sidebar-chord',
@@ -228,6 +229,33 @@ export function ChordPanel() {
               + Custom
             </button>
           )}
+        </div>
+      </div>
+
+      {/* Bass Note */}
+      <div>
+        <label style={labelStyle}>Bass: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{bass || 'none'}</span></label>
+        <div className="flex flex-wrap gap-0.5">
+          {(() => {
+            const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+            return chromatic.map((note) => {
+              const active = bass === note
+              return (
+                <button
+                  key={note}
+                  onClick={() => setBass(bass === note ? null : note)}
+                  className="px-1 py-0.5 text-[8px] rounded-md border transition-all duration-150 hover:-translate-y-0.5"
+                  style={{
+                    borderColor: active ? 'var(--accent)' : 'var(--border-ui)',
+                    color: active ? 'var(--accent)' : 'var(--text-ui-dim)',
+                    background: active ? 'var(--accent-soft)' : 'rgba(255,255,255,0.02)',
+                  }}
+                >
+                  {note}
+                </button>
+              )
+            })
+          })()}
         </div>
       </div>
 

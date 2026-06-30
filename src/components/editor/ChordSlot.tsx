@@ -111,12 +111,12 @@ export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1 }: 
             {parts.extensionText && chord.extensions.map(formatExtension).join('')}
           </span>
         )}
+        {parts.bassText && (
+          <span data-export-nudge className="font-bold" style={{ fontSize: rootSize, color: '#000' }}>
+            {parts.bassText}
+          </span>
+        )}
       </div>
-      {parts.bassText && (
-        <div data-export-nudge className="text-center leading-none" style={{ fontSize: superSize, color: '#000' }}>
-          {parts.bassText}
-        </div>
-      )}
     </div>
   )
 }
