@@ -10,12 +10,13 @@ export type ChordQuality =
   | '5'
   | 'power'
 
-export type ChordDuration = 'none' | 'whole' | 'half' | 'quarter'
+export type ChordDuration = 'none' | 'whole' | 'half' | 'dottedHalf' | 'quarter'
 
 export const DURATION_FRACTIONS: Record<ChordDuration, number> = {
   none: 0,
   whole: 1,
   half: 0.5,
+  dottedHalf: 0.75,
   quarter: 0.25,
 }
 

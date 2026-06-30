@@ -472,6 +472,9 @@ export function RightSidebar() {
                       style={{
                         ...(active ? { ...btnActive } : { ...btnBase }),
                         ...(disabled ? { opacity: 0.3, cursor: 'not-allowed' } : {}),
+                        fontSize: 18,
+                        minWidth: 28,
+                        textAlign: 'center',
                       }}
                       onMouseEnter={(e) => { if (!active && !disabled) Object.assign(e.currentTarget.style, btnHover) }}
                       onMouseLeave={(e) => { if (!active && !disabled) Object.assign(e.currentTarget.style, { background: btnBase.background, borderColor: btnBase.borderColor }) }}

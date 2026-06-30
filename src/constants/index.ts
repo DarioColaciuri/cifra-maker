@@ -46,9 +46,10 @@ export const QUALITIES: { value: string; label: string }[] = [
 
 export const CHORD_DURATIONS: { value: string; label: string }[] = [
   { value: 'none', label: 'None' },
-  { value: 'whole', label: 'Whole' },
-  { value: 'half', label: 'Half' },
-  { value: 'quarter', label: 'Quarter' },
+  { value: 'whole', label: '\uD834\uDD5D' },
+  { value: 'half', label: '\uD834\uDD5E' },
+  { value: 'dottedHalf', label: '\uD834\uDD5E\u00B7' },
+  { value: 'quarter', label: '\uD834\uDD5F' },
 ]
 
 export const EXTENSIONS = [
