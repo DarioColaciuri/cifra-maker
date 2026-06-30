@@ -6,6 +6,7 @@ export const PAGE_MARGIN_TOP = 80
 export const PAGE_MARGIN_BOTTOM = 80
 
 export const MEASURES_PER_SYSTEM = 4
+export const SECTION_H_PADDING = 28 // SectionBlock border-2 (4px) + content px-3 (24px)
 export const DEFAULT_SYSTEM_SPACING = 24
 export const DEFAULT_CHORD_FONT_SIZE = 15
 export const DEFAULT_EXTENSION_FONT_SIZE = 10
