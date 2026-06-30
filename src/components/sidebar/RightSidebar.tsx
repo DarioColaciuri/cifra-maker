@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useDocumentStore } from '@/stores/documentStore'
 import { useUIStore } from '@/stores/uiStore'
-import { QUALITIES, EXTENSIONS, FONT_FAMILIES } from '@/constants'
-import type { ChordQuality } from '@/types'
+import { QUALITIES, EXTENSIONS, CHORD_DURATIONS, BLACK_KEYS, FONT_FAMILIES } from '@/constants'
+import type { ChordQuality, ChordDuration } from '@/types'
+import { DURATION_FRACTIONS } from '@/types'
 
 const uiInputClass = "w-full px-2 py-1.5 text-xs rounded-md border transition-all"
 const uiBtnActive = "px-1.5 py-0.5 text-[10px] rounded-md border transition-all"
@@ -15,6 +16,9 @@ export function RightSidebar() {
 
   const [showCustomExt, setShowCustomExt] = useState(false)
   const [customExtValue, setCustomExtValue] = useState('')
+  const [sharpPref, setSharpPref] = useState<Record<string, 'sharp' | 'flat'>>({
+    'C#': 'sharp', 'D#': 'sharp', 'F#': 'sharp', 'G#': 'sharp', 'A#': 'sharp',
+  })
 
   const selectedSection = selectedSectionIds[0]
     ? document.sections.find((s) => s.id === selectedSectionIds[0])
@@ -395,18 +399,84 @@ export function RightSidebar() {
             <div>
               <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Bass Note</label>
               <div className="flex flex-wrap gap-0.5">
-                {['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'].map((note) => {
-                  const active = selectedChord!.bass === note
+                {(() => {
+                  const blackBySharp: Record<string, typeof BLACK_KEYS[number]> = {}
+                  for (const bk of BLACK_KEYS) blackBySharp[bk.sharp] = bk
+                  const entries: ({ key: string; sharp: string; flat: string } | string)[] = []
+                  for (const n of ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']) {
+                    if (blackBySharp[n]) entries.push({ key: blackBySharp[n].sharp, sharp: blackBySharp[n].sharp, flat: blackBySharp[n].flat })
+                    else entries.push(n)
+                  }
+                  return entries.map((entry) => {
+                    const isBlack = typeof entry !== 'string'
+                    const noteKey = isBlack ? (entry as { key: string }).key : entry as string
+                    const noteSharp = isBlack ? (entry as { sharp: string }).sharp : entry as string
+                    const displayNote = isBlack
+                      ? (sharpPref[noteSharp] || 'sharp') === 'sharp' ? noteSharp : (entry as { flat: string }).flat
+                      : entry as string
+                    const active = isBlack
+                      ? selectedChord!.bass === noteSharp || selectedChord!.bass === (entry as { flat: string }).flat
+                      : selectedChord!.bass === entry
+                    return (
+                      <button
+                        key={noteKey}
+                        onClick={() => updateChord(selectedChordContext!.sectionId, selectedChordContext!.systemId, selectedChordContext!.measureId, selectedChord!.id, { bass: active ? null : displayNote })}
+                        onContextMenu={(e) => {
+                          if (isBlack) {
+                            e.preventDefault()
+                            setSharpPref((prev) => ({
+                              ...prev,
+                              [noteSharp]: prev[noteSharp] === 'sharp' ? 'flat' : 'sharp',
+                            }))
+                          }
+                        }}
+                        className="px-1 py-0.5 text-[8px] rounded-md border transition-all duration-200 hover:-translate-y-0.5"
+                        style={active ? { ...btnActive } : { ...btnBase }}
+                        onMouseEnter={(e) => { if (!active) Object.assign(e.currentTarget.style, btnHover) }}
+                        onMouseLeave={(e) => { if (!active) Object.assign(e.currentTarget.style, { background: btnBase.background, borderColor: btnBase.borderColor }) }}
+                        title={isBlack ? `right-click to toggle ${noteSharp}/${(entry as { flat: string }).flat}` : undefined}
+                      >
+                        {displayNote}
+                      </button>
+                    )
+                  })
+                })()}
+              </div>
+            </div>
+
+            <div>
+              <label className={uiLabelClass} style={{ color: 'var(--text-ui-dim)' }}>Duration</label>
+              <div className="flex flex-wrap gap-1">
+                {CHORD_DURATIONS.map(({ value, label }) => {
+                  const active = (selectedChord!.duration || 'none') === value
+                  const otherChordsTotal = (() => {
+                    if (!selectedChordContext || !selectedChord) return 0
+                    const section = document.sections.find((s) => s.id === selectedChordContext.sectionId)
+                    if (!section) return 0
+                    const system = section.systems.find((sys) => sys.id === selectedChordContext.systemId)
+                    if (!system) return 0
+                    const measure = system.measures.find((m) => m.id === selectedChordContext.measureId)
+                    if (!measure) return 0
+                    return measure.chords
+                      .filter((c) => c.id !== selectedChord.id)
+                      .reduce((sum, c) => sum + DURATION_FRACTIONS[c.duration || 'none'], 0)
+                  })()
+                  const optionFraction = DURATION_FRACTIONS[value as ChordDuration]
+                  const disabled = !active && optionFraction > 0 && otherChordsTotal + optionFraction > 1
                   return (
                     <button
-                      key={note}
-                      onClick={() => updateChord(selectedChordContext!.sectionId, selectedChordContext!.systemId, selectedChordContext!.measureId, selectedChord!.id, { bass: active ? null : note })}
-                      className="px-1 py-0.5 text-[8px] rounded-md border transition-all duration-200 hover:-translate-y-0.5"
-                      style={active ? { ...btnActive } : { ...btnBase }}
-                      onMouseEnter={(e) => { if (!active) Object.assign(e.currentTarget.style, btnHover) }}
-                      onMouseLeave={(e) => { if (!active) Object.assign(e.currentTarget.style, { background: btnBase.background, borderColor: btnBase.borderColor }) }}
+                      key={value}
+                      onClick={() => updateChord(selectedChordContext!.sectionId, selectedChordContext!.systemId, selectedChordContext!.measureId, selectedChord!.id, { duration: value as ChordDuration })}
+                      className={uiBtnActive}
+                      disabled={disabled}
+                      style={{
+                        ...(active ? { ...btnActive } : { ...btnBase }),
+                        ...(disabled ? { opacity: 0.3, cursor: 'not-allowed' } : {}),
+                      }}
+                      onMouseEnter={(e) => { if (!active && !disabled) Object.assign(e.currentTarget.style, btnHover) }}
+                      onMouseLeave={(e) => { if (!active && !disabled) Object.assign(e.currentTarget.style, { background: btnBase.background, borderColor: btnBase.borderColor }) }}
                     >
-                      {note}
+                      {label}
                     </button>
                   )
                 })}

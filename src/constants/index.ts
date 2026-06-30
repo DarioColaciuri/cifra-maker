@@ -44,6 +44,13 @@ export const QUALITIES: { value: string; label: string }[] = [
   { value: 'power', label: 'Power' },
 ]
 
+export const CHORD_DURATIONS: { value: string; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'whole', label: 'Whole' },
+  { value: 'half', label: 'Half' },
+  { value: 'quarter', label: 'Quarter' },
+]
+
 export const EXTENSIONS = [
   '6', '7', '9', '11', '13',
   'maj7', 'maj9',

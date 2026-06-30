@@ -12,9 +12,10 @@ interface Props {
   systemId: string
   measureId: string
   scale?: number
+  minWidth?: number
 }
 
-export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1 }: Props) {
+export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1, minWidth }: Props) {
   const openChordBuilder = useUIStore((s) => s.openChordBuilder)
   const setSelectedChord = useUIStore((s) => s.setSelectedChord)
   const { previewChord } = useAudioPreview()
@@ -46,6 +47,7 @@ export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1 }: 
     transition,
     opacity: isDragging ? 0.3 : 1,
     zIndex: isDragging ? 50 : 10,
+    ...(minWidth && minWidth > 0 ? { minWidth, flex: `0 0 ${minWidth}px`, maxWidth: minWidth } : {}),
   }
 
   const rootSize = Math.round((chord.fontSize || 15) * scale)

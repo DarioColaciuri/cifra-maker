@@ -236,26 +236,55 @@ export function ChordPanel() {
       <div>
         <label style={labelStyle}>Bass: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{bass || 'none'}</span></label>
         <div className="flex flex-wrap gap-0.5">
-          {(() => {
-            const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-            return chromatic.map((note) => {
-              const active = bass === note
-              return (
-                <button
-                  key={note}
-                  onClick={() => setBass(bass === note ? null : note)}
-                  className="px-1 py-0.5 text-[8px] rounded-md border transition-all duration-150 hover:-translate-y-0.5"
-                  style={{
-                    borderColor: active ? 'var(--accent)' : 'var(--border-ui)',
-                    color: active ? 'var(--accent)' : 'var(--text-ui-dim)',
-                    background: active ? 'var(--accent-soft)' : 'rgba(255,255,255,0.02)',
-                  }}
-                >
-                  {note}
-                </button>
-              )
-            })
-          })()}
+          {((): (string | { key: string; sharp: string; flat: string })[] => {
+            const blackBySharp: Record<string, typeof BLACK_KEYS[number]> = {}
+            for (const bk of BLACK_KEYS) blackBySharp[bk.sharp] = bk
+            const entries: (string | { key: string; sharp: string; flat: string })[] = []
+            for (const n of ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']) {
+              if (blackBySharp[n]) entries.push({ key: blackBySharp[n].sharp, sharp: blackBySharp[n].sharp, flat: blackBySharp[n].flat })
+              else entries.push(n)
+            }
+            return entries
+          })().map((entry) => {
+            const isBlack = typeof entry !== 'string'
+            const noteSharp = isBlack ? entry.sharp : entry
+            const displayNote = isBlack
+              ? (sharpPref[entry.sharp] || 'sharp') === 'sharp' ? entry.sharp : entry.flat
+              : entry
+            const altNote = isBlack
+              ? (sharpPref[entry.sharp] || 'sharp') === 'sharp' ? entry.flat : entry.sharp
+              : null
+            const active = isBlack
+              ? bass === entry.sharp || bass === entry.flat
+              : bass === noteSharp
+            return (
+              <button
+                key={noteSharp}
+                onClick={() => setBass(active ? null : displayNote)}
+                onContextMenu={(e) => {
+                  if (isBlack) {
+                    e.preventDefault()
+                    setSharpPref((prev) => ({
+                      ...prev,
+                      [entry.sharp]: prev[entry.sharp] === 'sharp' ? 'flat' : 'sharp',
+                    }))
+                  }
+                }}
+                className="px-1 py-0.5 text-[8px] rounded-md border transition-all duration-150 hover:-translate-y-0.5"
+                style={{
+                  borderColor: active ? 'var(--accent)' : 'var(--border-ui)',
+                  color: active ? 'var(--accent)' : 'var(--text-ui-dim)',
+                  background: active ? 'var(--accent-soft)' : 'rgba(255,255,255,0.02)',
+                }}
+                title={isBlack ? `right-click to toggle ${entry.sharp}/${entry.flat}` : undefined}
+              >
+                {displayNote}
+                {altNote && (
+                  <span style={{ fontSize: 6, color: 'var(--text-ui-dim)', opacity: 0.5, marginLeft: 1 }}>{altNote}</span>
+                )}
+              </button>
+            )
+          })}
         </div>
       </div>
 

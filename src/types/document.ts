@@ -10,6 +10,15 @@ export type ChordQuality =
   | '5'
   | 'power'
 
+export type ChordDuration = 'none' | 'whole' | 'half' | 'quarter'
+
+export const DURATION_FRACTIONS: Record<ChordDuration, number> = {
+  none: 0,
+  whole: 1,
+  half: 0.5,
+  quarter: 0.25,
+}
+
 export interface Chord {
   id: string
   root: string
@@ -17,6 +26,7 @@ export interface Chord {
   extensions: string[]
   bass: string | null
   fontSize?: number
+  duration?: ChordDuration
 }
 
 export type TextAlignment = 'left' | 'center' | 'right'

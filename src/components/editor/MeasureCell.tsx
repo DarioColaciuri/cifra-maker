@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { Measure } from '@/types'
+import type { Measure, ChordDuration } from '@/types'
+import { DURATION_FRACTIONS } from '@/types'
 import { ChordSlot } from './ChordSlot'
 import { PlacedSymbol } from './PlacedSymbol'
 import { useDocumentStore } from '@/stores/documentStore'
@@ -49,7 +50,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
   const [editingRepeatCount, setEditingRepeatCount] = useState(false)
   const [repeatCountDraft, setRepeatCountDraft] = useState(measure.repeatCount ?? 2)
 
-  const { removeMeasure, addChord, updateMeasure } = useDocumentStore()
+  const { removeMeasure, updateMeasure } = useDocumentStore()
   const { symbolToPlace, setSymbolToPlace, setToolMode, dragOverMeasureId, activeDragType, activeDragSymbolId } = useUIStore()
 
   const droppableId = `${sectionId}--${systemId}--${measure.id}`
@@ -66,10 +67,31 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
 
   const chordIds = measure.chords.map((c) => c.id)
 
+  const chordContainerPadding = 8
+  const chordGap = 4
+  const availableWidth = getMeasureWidth() - 12 - chordContainerPadding
+
+  // Calculate widths for chords with duration
+  const hasAnyDuration = measure.chords.some((c) => (c.duration || 'none') !== 'none')
+  const totalFixedFraction = measure.chords.reduce((sum, c) => {
+    const dur = (c.duration || 'none') as ChordDuration
+    return sum + DURATION_FRACTIONS[dur]
+  }, 0)
+
+  const getChordWidth = (chord: typeof measure.chords[0]): number | undefined => {
+    const dur = (chord.duration || 'none') as ChordDuration
+    if (dur === 'none') return undefined
+    const fraction = DURATION_FRACTIONS[dur]
+    if (totalFixedFraction > 1) {
+      return Math.max(30, (fraction / totalFixedFraction) * availableWidth)
+    }
+    return Math.max(30, fraction * availableWidth - chordGap)
+  }
+
   // Calculate scale factor to fit chords within measure width
-  const measureWidth = getMeasureWidth() - 12 // account for dividers and padding
+  const measureWidth = availableWidth
   let chordScale = 1
-  if (measure.chords.length > 0) {
+  if (measure.chords.length > 0 && !hasAnyDuration) {
     const estimateChordWidth = (fs: number, name: string) => name.length * fs * 0.7 + 4
     const totalEstimated = measure.chords.reduce((sum, c) => {
       const name = formatChordName(c)
@@ -359,17 +381,27 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
 
       {/* Chords — sortable within the measure */}
       <SortableContext items={chordIds} strategy={rectSortingStrategy}>
-        <div className="absolute inset-0 flex items-center justify-evenly px-1 z-10">
-          {measure.chords.map((chord) => (
+        <div
+          className="absolute inset-0 flex items-center px-1 z-10"
+          style={{
+            justifyContent: hasAnyDuration ? 'flex-start' : 'space-evenly',
+            gap: hasAnyDuration ? chordGap : 0,
+          }}
+        >
+          {measure.chords.map((chord) => {
+            const chordWidth = getChordWidth(chord)
+            return (
               <ChordSlot
                 key={chord.id}
                 chord={chord}
                 sectionId={sectionId}
                 systemId={systemId}
                 measureId={measure.id}
-                scale={chordScale}
+                scale={hasAnyDuration ? 1 : chordScale}
+                minWidth={chordWidth}
               />
-          ))}
+            )
+          })}
         </div>
       </SortableContext>
     </div>
