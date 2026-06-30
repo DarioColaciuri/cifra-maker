@@ -103,7 +103,7 @@ export function ChordSlot({ chord, sectionId, systemId, measureId, scale = 1, mi
       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
       title={`${parts.root + parts.qualitySuffix + parts.extensionText + parts.bassText} (drag to reorder, double-click to edit)`}
     >
-      <div className="text-center leading-none inline-block">
+      <div className="text-center leading-none inline-block whitespace-nowrap">
         <span data-export-nudge className="font-bold align-baseline" style={{ fontSize: rootSize, color: '#000' }}>
           {chord.root}
         </span>
