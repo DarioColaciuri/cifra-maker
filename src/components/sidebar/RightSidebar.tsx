@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useDocumentStore } from '@/stores/documentStore'
 import { useUIStore } from '@/stores/uiStore'
 import { QUALITIES, EXTENSIONS, FONT_FAMILIES } from '@/constants'
@@ -11,6 +12,9 @@ export function RightSidebar() {
   const document = useDocumentStore((s) => s.document)
   const { updateTitle, updateSubtitle, updateSectionSpacing, updateSectionLabel, setNotationStyle, updateChord, updateSectionGap, updatePageTopMargin, updateTitleSectionGap } = useDocumentStore()
   const { selectedSectionIds, selectedChordIds, selectedChordContext, clearSelection } = useUIStore()
+
+  const [showCustomExt, setShowCustomExt] = useState(false)
+  const [customExtValue, setCustomExtValue] = useState('')
 
   const selectedSection = selectedSectionIds[0]
     ? document.sections.find((s) => s.id === selectedSectionIds[0])
@@ -333,6 +337,58 @@ export function RightSidebar() {
                     </button>
                   )
                 })}
+                {selectedChord!.extensions.filter((e) => !(EXTENSIONS as readonly string[]).includes(e)).map((ext) => (
+                  <span
+                    key={ext}
+                    className="inline-flex items-center gap-0.5 px-1 py-0.5 text-[9px] rounded-md border border-dashed"
+                    style={{ ...btnActive }}
+                  >
+                    {ext}
+                    <button
+                      onClick={() => {
+                        const newExts = selectedChord!.extensions.filter((e) => e !== ext)
+                        updateChord(selectedChordContext!.sectionId, selectedChordContext!.systemId, selectedChordContext!.measureId, selectedChord!.id, { extensions: newExts })
+                      }}
+                      className="text-[10px] leading-none opacity-60 hover:opacity-100"
+                    >
+                      x
+                    </button>
+                  </span>
+                ))}
+                {showCustomExt ? (
+                  <input
+                    type="text"
+                    value={customExtValue}
+                    onChange={(e) => setCustomExtValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = customExtValue.trim()
+                        if (val && !selectedChord!.extensions.includes(val)) {
+                          const newExts = [...selectedChord!.extensions, val]
+                          updateChord(selectedChordContext!.sectionId, selectedChordContext!.systemId, selectedChordContext!.measureId, selectedChord!.id, { extensions: newExts })
+                        }
+                        setCustomExtValue('')
+                        setShowCustomExt(false)
+                      }
+                      if (e.key === 'Escape') { setShowCustomExt(false); setCustomExtValue('') }
+                    }}
+                    onBlur={() => { if (!customExtValue.trim()) { setShowCustomExt(false); setCustomExtValue('') } }}
+                    autoFocus
+                    placeholder="custom..."
+                    className="w-14 px-1 py-0.5 text-[9px] rounded-md border bg-transparent outline-none"
+                    style={{ borderColor: 'var(--accent)', color: 'var(--text-ui)' }}
+                  />
+                ) : (
+                  <button
+                    onClick={() => setShowCustomExt(true)}
+                    className="px-1 py-0.5 text-[9px] rounded-md border border-dashed transition-all duration-200 hover:-translate-y-0.5"
+                    style={{ ...btnBase }}
+                    onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnHover)}
+                    onMouseLeave={(e) => Object.assign(e.currentTarget.style, { background: btnBase.background, borderColor: btnBase.borderColor })}
+                  >
+                    + Custom
+                  </button>
+                )}
               </div>
             </div>
 

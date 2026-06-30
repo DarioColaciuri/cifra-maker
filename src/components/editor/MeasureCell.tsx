@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Measure } from '@/types'
 import { ChordSlot } from './ChordSlot'
 import { PlacedSymbol } from './PlacedSymbol'
@@ -45,6 +46,9 @@ interface Props {
 }
 
 export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
+  const [editingRepeatCount, setEditingRepeatCount] = useState(false)
+  const [repeatCountDraft, setRepeatCountDraft] = useState(measure.repeatCount ?? 2)
+
   const { removeMeasure, addChord, updateMeasure } = useDocumentStore()
   const { symbolToPlace, setSymbolToPlace, setToolMode, dragOverMeasureId, activeDragType, activeDragSymbolId } = useUIStore()
 
@@ -92,6 +96,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
         case 'segno': updates.segno = !measure.segno; break
         case 'firstEnding': updates.firstEnding = !measure.firstEnding; break
         case 'secondEnding': updates.secondEnding = !measure.secondEnding; break
+        case 'repeatCount': updates.repeatCount = measure.repeatCount === null ? 2 : null; break
       }
       if (Object.keys(updates).length > 0) {
         updateMeasure(sectionId, systemId, measure.id, updates)
@@ -184,6 +189,55 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
               </PlacedSymbol>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Repeat count — top-right outside bar */}
+      {measure.repeatCount !== null && (
+        <div className="absolute z-10" style={{ top: -30, right: -15 }}>
+          <PlacedSymbol symbolId="repeatCount" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            {editingRepeatCount ? (
+              <input
+                type="number"
+                min={1}
+                max={99}
+                value={repeatCountDraft}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value)
+                  setRepeatCountDraft(isNaN(val) ? 1 : Math.max(1, Math.min(99, val)))
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    updateMeasure(sectionId, systemId, measure.id, { repeatCount: repeatCountDraft })
+                    setEditingRepeatCount(false)
+                  }
+                  if (e.key === 'Escape') setEditingRepeatCount(false)
+                  e.stopPropagation()
+                }}
+                onBlur={() => {
+                  updateMeasure(sectionId, systemId, measure.id, { repeatCount: repeatCountDraft })
+                  setEditingRepeatCount(false)
+                }}
+                autoFocus
+                className="w-8 text-center text-[11px] font-bold border rounded px-0.5"
+                style={{ color: '#000', borderColor: 'var(--accent)', background: 'var(--accent-soft)' }}
+              />
+            ) : (
+              <span
+                onClick={(e) => {
+                  if (symbolToPlace) return
+                  e.stopPropagation()
+                  setRepeatCountDraft(measure.repeatCount ?? 2)
+                  setEditingRepeatCount(true)
+                }}
+                className="text-[11px] font-bold cursor-pointer select-none"
+                style={{ color: '#000' }}
+                title="Click to edit repetition count"
+              >
+                x{measure.repeatCount}
+              </span>
+            )}
+          </PlacedSymbol>
         </div>
       )}
 
@@ -284,6 +338,12 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
               <div className="text-[10px] font-medium text-center text-amber-400/30" style={{ marginTop: -18, marginLeft: 4 }}>
                 {activeDragSymbolId === 'firstEnding' ? '1.' : '2.'}
               </div>
+            </div>
+          )}
+          {/* repeatCount ghost — top-right */}
+          {(activeDragSymbolId === 'repeatCount') && (
+            <div className="absolute z-30 pointer-events-none" style={{ top: -30, right: -15 }}>
+              <span className="text-[11px] font-bold text-amber-400/35">x2</span>
             </div>
           )}
           {/* Below-measure ghosts: fine, dc, ds */}

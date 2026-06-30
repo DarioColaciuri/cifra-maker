@@ -3,9 +3,13 @@ import { useDocumentStore } from '@/stores/documentStore'
 import { useUIStore } from '@/stores/uiStore'
 
 export function useKeyboardShortcuts() {
-  const { undo, redo, removeSection } = useDocumentStore()
+  const { undo, redo } = useDocumentStore()
   const {
     selectedSectionIds,
+    selectedSystemIds,
+    selectedMeasureIds,
+    selectedChordIds,
+    selectedChordContext,
     closeChordBuilder,
     chordBuilderOpen,
     clearSelection,
@@ -43,13 +47,60 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      // Delete / Backspace — only when not focused on an input
+      // Delete / Backspace
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (isInput) return
         if (chordBuilderOpen) return
         e.preventDefault()
+
+        const store = useDocumentStore.getState()
+        const doc = store.document
+
+        // Delete selected chords
+        if (selectedChordIds.length > 0 && selectedChordContext) {
+          for (const chordId of selectedChordIds) {
+            store.removeChord(
+              selectedChordContext.sectionId,
+              selectedChordContext.systemId,
+              selectedChordContext.measureId,
+              chordId,
+            )
+          }
+          clearSelection()
+          return
+        }
+
+        // Delete selected measures
+        if (selectedMeasureIds.length > 0) {
+          for (const section of doc.sections) {
+            for (const system of section.systems) {
+              for (const measure of system.measures) {
+                if (selectedMeasureIds.includes(measure.id)) {
+                  store.removeMeasure(section.id, system.id, measure.id)
+                }
+              }
+            }
+          }
+          clearSelection()
+          return
+        }
+
+        // Delete selected systems
+        if (selectedSystemIds.length > 0) {
+          for (const section of doc.sections) {
+            for (const system of section.systems) {
+              if (selectedSystemIds.includes(system.id)) {
+                store.removeSystem(section.id, system.id)
+              }
+            }
+          }
+          clearSelection()
+          return
+        }
+
+        // Delete selected sections
         for (const id of selectedSectionIds) {
-          removeSection(id)
+          store.removeSection(id)
         }
         clearSelection()
         return
@@ -58,5 +109,5 @@ export function useKeyboardShortcuts() {
 
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [undo, redo, selectedSectionIds, chordBuilderOpen, closeChordBuilder, removeSection, clearSelection])
+  }, [undo, redo, selectedSectionIds, selectedSystemIds, selectedMeasureIds, selectedChordIds, selectedChordContext, chordBuilderOpen, closeChordBuilder, clearSelection])
 }

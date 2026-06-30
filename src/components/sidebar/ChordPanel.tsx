@@ -27,6 +27,8 @@ export function ChordPanel() {
   const [root, setRoot] = useState('C')
   const [quality, setQuality] = useState<ChordQuality>('major')
   const [extensions, setExtensions] = useState<string[]>([])
+  const [showCustomExt, setShowCustomExt] = useState(false)
+  const [customExtValue, setCustomExtValue] = useState('')
   const [sharpPref, setSharpPref] = useState<Record<string, 'sharp' | 'flat'>>({
     'C#': 'sharp', 'D#': 'sharp', 'F#': 'sharp', 'G#': 'sharp', 'A#': 'sharp',
   })
@@ -174,6 +176,58 @@ export function ChordPanel() {
               </button>
             )
           })}
+          {extensions.filter((e) => !(EXTENSIONS as readonly string[]).includes(e)).map((ext) => (
+            <span
+              key={ext}
+              className="inline-flex items-center gap-0.5 px-1 py-0.5 text-[9px] rounded-md border border-dashed"
+              style={{
+                borderColor: 'var(--accent)',
+                color: 'var(--accent)',
+                background: 'var(--accent-soft)',
+              }}
+            >
+              {ext}
+              <button
+                onClick={() => setExtensions((prev) => prev.filter((e) => e !== ext))}
+                className="text-[10px] leading-none opacity-60 hover:opacity-100"
+              >
+                x
+              </button>
+            </span>
+          ))}
+          {showCustomExt ? (
+            <input
+              type="text"
+              value={customExtValue}
+              onChange={(e) => setCustomExtValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const val = customExtValue.trim()
+                  if (val && !extensions.includes(val)) setExtensions((prev) => [...prev, val])
+                  setCustomExtValue('')
+                  setShowCustomExt(false)
+                }
+                if (e.key === 'Escape') { setShowCustomExt(false); setCustomExtValue('') }
+              }}
+              onBlur={() => { if (!customExtValue.trim()) { setShowCustomExt(false); setCustomExtValue('') } }}
+              autoFocus
+              placeholder="custom..."
+              className="w-14 px-1 py-0.5 text-[9px] rounded-md border bg-transparent outline-none"
+              style={{ borderColor: 'var(--accent)', color: 'var(--text-ui)' }}
+            />
+          ) : (
+            <button
+              onClick={() => setShowCustomExt(true)}
+              className="px-1 py-0.5 text-[9px] rounded-md border border-dashed transition-all duration-150 hover:-translate-y-0.5"
+              style={{
+                borderColor: 'var(--border-ui)',
+                color: 'var(--text-ui-dim)',
+                background: 'rgba(255,255,255,0.02)',
+              }}
+            >
+              + Custom
+            </button>
+          )}
         </div>
       </div>
 

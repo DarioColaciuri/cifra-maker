@@ -15,15 +15,6 @@ export function ExportPanel() {
   return (
     <div className="space-y-1.5 py-1">
       <button
-        onClick={() => exportPNG()}
-        className="w-full text-[10px] py-1.5 rounded-md border transition-all duration-200 hover:-translate-y-0.5"
-        style={btnStyle}
-        onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnHover)}
-        onMouseLeave={(e) => Object.assign(e.currentTarget.style, btnStyle)}
-      >
-        Export PNG
-      </button>
-      <button
         onClick={() => exportPNG(2)}
         className="w-full text-[10px] py-1.5 rounded-md border transition-all duration-200 hover:-translate-y-0.5"
         style={btnStyle}

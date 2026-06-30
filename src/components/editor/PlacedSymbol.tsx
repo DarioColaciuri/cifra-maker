@@ -22,6 +22,7 @@ const SYMBOL_KEYS: Record<string, string> = {
   repeatStart: 'repeatStart',
   repeatEnd: 'repeatEnd',
   doubleBarline: 'doubleBarline',
+  repeatCount: 'repeatCount',
   firstEnding: 'firstEnding',
   secondEnding: 'secondEnding',
   rehearsalMark: 'rehearsalMark',
@@ -55,7 +56,7 @@ export function PlacedSymbol({ symbolId, sectionId, systemId, measureId, childre
     e.preventDefault()
     const key = SYMBOL_KEYS[symbolId]
     if (!key) return
-    const value: boolean | null = symbolId === 'rehearsalMark' ? null : false
+    const value: boolean | null = (symbolId === 'rehearsalMark' || symbolId === 'repeatCount') ? null : false
     updateMeasure(sectionId, systemId, measureId, { [key]: value })
   }
 

@@ -12,14 +12,7 @@ const SYMBOLS: SymbolDef[] = [
   { id: 'repeatStart', label: 'Repeat start', icon: '𝄆', desc: 'Begin repeat' },
   { id: 'repeatEnd', label: 'Repeat end', icon: '𝄇', desc: 'End repeat' },
   { id: 'doubleBarline', label: 'Double bar', icon: '𝄁', desc: 'Double barline' },
-  { id: 'fermata', label: 'Fermata', icon: '𝄐', desc: 'Hold/pause' },
-  { id: 'fine', label: 'Fine', icon: '𝄂', desc: 'End' },
-  { id: 'dcAlFine', label: 'D.C. al Fine', icon: '𝄴', desc: 'Da Capo' },
-  { id: 'dsAlCoda', label: 'D.S. al Coda', icon: '𝄵', desc: 'Dal Segno al Coda' },
-  { id: 'coda', label: 'Coda', icon: '𝄌', desc: 'Coda sign' },
-  { id: 'segno', label: 'Segno', icon: '𝄉', desc: 'Segno sign' },
-  { id: 'firstEnding', label: '1st ending', icon: '𝄋', desc: 'First volta' },
-  { id: 'secondEnding', label: '2nd ending', icon: '𝄊', desc: 'Second volta' },
+  { id: 'repeatCount', label: 'Repeat count', icon: 'x2', desc: 'Number of repetitions' },
 ]
 
 function DraggableSymbol({ sym }: { sym: SymbolDef }) {

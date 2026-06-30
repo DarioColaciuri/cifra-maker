@@ -196,6 +196,7 @@ export default function App() {
           case 'segno': updates.segno = !measure.segno; break
           case 'firstEnding': updates.firstEnding = !measure.firstEnding; break
           case 'secondEnding': updates.secondEnding = !measure.secondEnding; break
+          case 'repeatCount': updates.repeatCount = measure.repeatCount === null ? 2 : null; break
         }
         if (Object.keys(updates).length > 0) {
           const store = useDocumentStore.getState()
@@ -221,10 +222,13 @@ export default function App() {
         if (fromMeasureId === toMeasureId) return
 
         const store = useDocumentStore.getState()
-        // Remove from source
-        store.updateMeasure(fromSectionId, fromSystemId, fromMeasureId, { [symbolId]: false })
-        // Add to target
-        store.updateMeasure(toSectionId, toSystemId, toMeasureId, { [symbolId]: true })
+        if (symbolId === 'repeatCount') {
+          store.updateMeasure(fromSectionId, fromSystemId, fromMeasureId, { repeatCount: null })
+          store.updateMeasure(toSectionId, toSystemId, toMeasureId, { repeatCount: 2 })
+        } else {
+          store.updateMeasure(fromSectionId, fromSystemId, fromMeasureId, { [symbolId]: false })
+          store.updateMeasure(toSectionId, toSystemId, toMeasureId, { [symbolId]: true })
+        }
       }
       return
     }
@@ -265,7 +269,8 @@ export default function App() {
             }}
           >
             {activeSymbol === 'repeatStart' ? '𝄆' : activeSymbol === 'repeatEnd' ? '𝄇' :
-             activeSymbol === 'doubleBarline' ? '𝄁' : activeSymbol === 'fermata' ? '𝄐' :
+             activeSymbol === 'doubleBarline' ? '𝄁' : activeSymbol === 'repeatCount' ? 'x2' :
+             activeSymbol === 'fermata' ? '𝄐' :
              activeSymbol === 'fine' ? '𝄂' : activeSymbol === 'dcAlFine' ? 'D.C. al Fine' :
              activeSymbol === 'dsAlCoda' ? 'D.S. al Coda' : activeSymbol === 'coda' ? '𝄌' :
              activeSymbol === 'segno' ? '𝄉' : activeSymbol === 'firstEnding' ? '1.' : '2.'}
