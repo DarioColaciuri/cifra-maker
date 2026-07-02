@@ -3,6 +3,7 @@ import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay, closestC
 import type { DragStartEvent, DragEndEvent, DragOverEvent } from '@dnd-kit/core'
 import { AppShell } from '@/components/layout/AppShell'
 import { A4Page } from '@/components/layout/A4Page'
+import { PageManager } from '@/components/layout/PageManager'
 import { Sidebar } from '@/components/sidebar/Sidebar'
 import { RightSidebar } from '@/components/sidebar/RightSidebar'
 import { EditorCanvas } from '@/components/editor/EditorCanvas'
@@ -251,9 +252,12 @@ export default function App() {
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
       <AppShell>
         <Sidebar />
-        <A4Page>
-          <EditorCanvas />
-        </A4Page>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <PageManager />
+          <A4Page>
+            <EditorCanvas />
+          </A4Page>
+        </div>
         <RightSidebar />
       </AppShell>
       {chordBuilderOpen && <ChordBuilderModal />}

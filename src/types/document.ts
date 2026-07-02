@@ -86,3 +86,16 @@ export interface CifraDocument {
   pageTopMargin: number
   titleSectionGap: number
 }
+
+export interface Page {
+  id: string
+  name: string
+  data: CifraDocument
+  createdAt: number
+}
+
+export interface Project {
+  pages: Page[]
+  activePageId: string
+  warningDismissed: boolean
+}

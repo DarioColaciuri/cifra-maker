@@ -1,9 +1,9 @@
-import type { CifraDocument, Section, System, Measure, Chord } from '@/types'
+import type { CifraDocument, Section, System, Measure, Chord, Project } from '@/types'
 import { v4 as uuid } from 'uuid'
 
-export function createDefaultDocument(): CifraDocument {
+export function createDefaultDocument(id?: string): CifraDocument {
   return {
-    id: 'default-doc',
+    id: id || 'default-doc',
     title: {
       text: 'Untitled',
       fontFamily: 'Georgia',
@@ -24,6 +24,22 @@ export function createDefaultDocument(): CifraDocument {
     notationStyle: 'symbols',
     pageTopMargin: 80,
     titleSectionGap: 32,
+  }
+}
+
+export function createDefaultProject(): Project {
+  const pageId = uuid()
+  return {
+    pages: [
+      {
+        id: pageId,
+        name: 'Page 1',
+        data: createDefaultDocument(pageId),
+        createdAt: Date.now(),
+      },
+    ],
+    activePageId: pageId,
+    warningDismissed: false,
   }
 }
 
