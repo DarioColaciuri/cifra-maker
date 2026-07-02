@@ -119,6 +119,7 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
         case 'firstEnding': updates.firstEnding = !measure.firstEnding; break
         case 'secondEnding': updates.secondEnding = !measure.secondEnding; break
         case 'repeatCount': updates.repeatCount = measure.repeatCount === null ? 2 : null; break
+        case 'percentSign': updates.percentSign = !measure.percentSign; break
       }
       if (Object.keys(updates).length > 0) {
         updateMeasure(sectionId, systemId, measure.id, updates)
@@ -191,6 +192,11 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
             <span className="text-[10px] font-bold border px-1 rounded" style={{ borderColor: 'rgba(0,0,0,0.2)', color: '#000' }}>
               {measure.rehearsalMark}
             </span>
+          </PlacedSymbol>
+        )}
+        {measure.percentSign && (
+          <PlacedSymbol symbolId="percentSign" sectionId={sectionId} systemId={systemId} measureId={measure.id}>
+            <span className="text-sm font-bold" style={{ color: '#000' }}>%</span>
           </PlacedSymbol>
         )}
       </div>
@@ -345,11 +351,11 @@ export function MeasureCell({ measure, systemId, sectionId, onClick }: Props) {
               </div>
             </div>
           )}
-          {/* Above-measure ghosts: fermata, segno, coda */}
-          {(activeDragSymbolId === 'fermata' || activeDragSymbolId === 'segno' || activeDragSymbolId === 'coda') && (
+          {/* Above-measure ghosts: fermata, segno, coda, percentSign */}
+          {(activeDragSymbolId === 'fermata' || activeDragSymbolId === 'segno' || activeDragSymbolId === 'coda' || activeDragSymbolId === 'percentSign') && (
             <div className="absolute top-0 left-0 right-0 flex justify-center z-30 pointer-events-none" style={{ marginTop: -20 }}>
               <span style={{ fontSize: 18, opacity: 0.35, color: 'var(--accent)' }}>
-                {activeDragSymbolId === 'fermata' ? '𝄐' : activeDragSymbolId === 'segno' ? '𝄉' : '𝄌'}
+                {activeDragSymbolId === 'fermata' ? '𝄐' : activeDragSymbolId === 'segno' ? '𝄉' : activeDragSymbolId === 'coda' ? '𝄌' : '%'}
               </span>
             </div>
           )}

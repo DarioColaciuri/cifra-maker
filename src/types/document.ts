@@ -59,6 +59,7 @@ export interface Measure {
   segno: boolean
   coda: boolean
   rehearsalMark: string | null
+  percentSign: boolean
 }
 
 export interface System {

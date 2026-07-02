@@ -26,6 +26,7 @@ const SYMBOL_KEYS: Record<string, string> = {
   firstEnding: 'firstEnding',
   secondEnding: 'secondEnding',
   rehearsalMark: 'rehearsalMark',
+  percentSign: 'percentSign',
 }
 
 export function PlacedSymbol({ symbolId, sectionId, systemId, measureId, children, className, style }: Props) {

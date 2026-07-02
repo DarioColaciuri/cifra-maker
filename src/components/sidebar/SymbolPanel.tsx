@@ -13,6 +13,7 @@ const SYMBOLS: SymbolDef[] = [
   { id: 'repeatEnd', label: 'Repeat end', icon: '𝄇', desc: 'End repeat' },
   { id: 'doubleBarline', label: 'Double bar', icon: '𝄁', desc: 'Double barline' },
   { id: 'repeatCount', label: 'Repeat count', icon: 'x2', desc: 'Number of repetitions' },
+  { id: 'percentSign', label: '% Symbol', icon: '%', desc: 'Percent sign' },
 ]
 
 function DraggableSymbol({ sym }: { sym: SymbolDef }) {

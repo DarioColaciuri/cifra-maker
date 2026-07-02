@@ -198,6 +198,7 @@ export default function App() {
           case 'firstEnding': updates.firstEnding = !measure.firstEnding; break
           case 'secondEnding': updates.secondEnding = !measure.secondEnding; break
           case 'repeatCount': updates.repeatCount = measure.repeatCount === null ? 2 : null; break
+          case 'percentSign': updates.percentSign = !measure.percentSign; break
         }
         if (Object.keys(updates).length > 0) {
           const store = useDocumentStore.getState()
@@ -277,7 +278,8 @@ export default function App() {
              activeSymbol === 'fermata' ? '𝄐' :
              activeSymbol === 'fine' ? '𝄂' : activeSymbol === 'dcAlFine' ? 'D.C. al Fine' :
              activeSymbol === 'dsAlCoda' ? 'D.S. al Coda' : activeSymbol === 'coda' ? '𝄌' :
-             activeSymbol === 'segno' ? '𝄉' : activeSymbol === 'firstEnding' ? '1.' : '2.'}
+             activeSymbol === 'segno' ? '𝄉' : activeSymbol === 'firstEnding' ? '1.' :
+             activeSymbol === 'secondEnding' ? '2.' : activeSymbol === 'percentSign' ? '%' : '%'}
           </div>
         ) : null}
       </DragOverlay>

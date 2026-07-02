@@ -80,6 +80,7 @@ export function createEmptyMeasure(): Measure {
     segno: false,
     coda: false,
     rehearsalMark: null,
+    percentSign: false,
   }
 }
 
